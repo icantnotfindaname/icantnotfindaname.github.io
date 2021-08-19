@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Gridea</title>
-    <updated>2021-08-19T17:15:24.642Z</updated>
+    <updated>2021-08-19T17:19:18.799Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -16,7 +16,11 @@
         <link href="https://icantnotfindaname.github.io/post/ce-shi/">
         </link>
         <updated>2021-08-19T15:41:32.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="1-准备">1. 准备</h2>
+        <summary type="html"><![CDATA[<p>每天撸它个一百豆，就当教交服务器的钱了。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>每天撸它个一百豆，就当教交服务器的钱了。</p>
+<!-- more -->
+<h2 id="1-准备">1. 准备</h2>
 <p>一台 Linux 服务器（最好是 centos 系统），京东账号关闭免密支付、打开支付验密设置并修改过于精确的地址以防万一。</p>
 <h2 id="2-安装docker">2. 安装Docker</h2>
 <pre><code class="language-bash">sudo yum check-update
