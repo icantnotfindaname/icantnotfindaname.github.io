@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-19T17:33:42.108Z</updated>
+    <updated>2021-08-20T02:49:58.086Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -11,11 +11,121 @@
     <icon>https://icantnotfindaname.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Louispace</rights>
     <entry>
-        <title type="html"><![CDATA[京东自动签到脚本部署]]></title>
-        <id>https://icantnotfindaname.github.io/post/1/</id>
-        <link href="https://icantnotfindaname.github.io/post/1/">
+        <title type="html"><![CDATA[如何看懂生肉？]]></title>
+        <id>https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/</id>
+        <link href="https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/">
         </link>
-        <updated>2021-08-19T15:41:32.000Z</updated>
+        <updated>2021-08-19T02:42:44.000Z</updated>
+        <summary type="html"><![CDATA[<p>这个短视频给了一个很简单有效的方法提升听力。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>这个短视频给了一个很简单有效的方法提升听力。</p>
+<!-- more -->
+<p>在开始的时候，务必从一些简单难度的音频开始，接着逐渐加大难度，（如果难度过大，试着调低倍速）。当你发现你可以很轻松地听完整段材料时，不要满足于此，接着调高倍速进行练习。（可以听懂两倍速个人觉得就差不多了）</p>
+<p>视频地址：https://t.me/tieliu/14572</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[nextcloud 安装笔记]]></title>
+        <id>https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/</id>
+        <link href="https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/">
+        </link>
+        <updated>2021-08-18T02:41:06.000Z</updated>
+        <content type="html"><![CDATA[<p>Snap 是一个类似容器的东西，支持 CentOS7.6+，其他系统可以到 snap 的官网进行查看。</p>
+<p><a href="https://snapcraft.io/install/nextcloud/centos">Install Nextcloud on CentOS using the Snap Store | Snapcraft</a></p>
+<p>下载命令如下：</p>
+<pre><code class="language-bash">sudo yum install epel-release
+sudo yum install snapd
+sudo systemctl enable --now snapd.socket
+sudo ln -s /var/lib/snapd/snap /snap
+sudo snap install nextcloud
+
+// 以上已经下载完成
+// 换端口
+snap set nextcloud ports.http=60000
+
+// https 配置SSL
+nextcloud.enable-https lets-encrypt
+
+// 创建软连接
+ln -s /var/snap/nextcloud/common/nextcloud/data/louis/files /root/nextcloud
+</code></pre>
+<p>一些其他的命令可以查看官方 Github，可以解决 80% 的问题：</p>
+<p><a href="https://github.com/nextcloud/nextcloud-snap">GitHub - nextcloud/nextcloud-snap: ☁️📦 Nextcloud packaged as a snap</a></p>
+<p>或者官方文档：</p>
+<p><a href="https://docs.nextcloud.com/server/latest/admin_manual/installation/#installation">Installation and server configuration - Nextcloud latest Administration Manual latest documentation</a></p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Net-Speeder 加速]]></title>
+        <id>https://icantnotfindaname.github.io/post/net-speeder-jia-su/</id>
+        <link href="https://icantnotfindaname.github.io/post/net-speeder-jia-su/">
+        </link>
+        <updated>2021-08-07T02:38:09.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="1-prepare">1. Prepare</h2>
+<pre><code class="language-json">yum -y install gcc  // install gcc
+gcc --version  // check 
+yum install libnet libpcap libnet-devel libpcap-devel
+</code></pre>
+<h2 id="2-install">2. Install</h2>
+<pre><code class="language-json">wget https://github.com/snooda/net-speeder/archive/master.zip
+unzip master.zip
+rm -rf master.zip
+cd net-speeder-master/ 
+sh build.sh
+</code></pre>
+<h2 id="3-usage">3. Usage</h2>
+<pre><code class="language-json">// 给所有的ip协议加速
+nohup /usr/local/net_speeder/net_speeder eth0 &quot;ip&quot; &gt;/dev/null 2&gt;&amp;1 &amp;
+</code></pre>
+<h2 id="4-result">4. Result</h2>
+<p>下行速度翻了个倍，但是上行速度没有显著提升，甚至有所下降。</p>
+<hr>
+<h3 id="20210807-update">2021.08.07 Update</h3>
+<p>晚高峰时速度大致提升20%，但这种技术终归是损人利己，还是关了罢。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[有关Netflix解锁的说明]]></title>
+        <id>https://icantnotfindaname.github.io/post/you-guan-netflix-jie-suo-de-shuo-ming/</id>
+        <link href="https://icantnotfindaname.github.io/post/you-guan-netflix-jie-suo-de-shuo-ming/">
+        </link>
+        <updated>2021-08-06T02:36:46.000Z</updated>
+        <content type="html"><![CDATA[<blockquote>
+<p>[Forwarded from Catnet-的工作日志]</p>
+</blockquote>
+<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。<br>
+包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。<br>
+Netflix 自制剧可以正常观赏。</p>
+<p>以下文章来源：</p>
+<p><a href="https://t.me/KuaiCheDao_Info/1683">香港 台灣 新加坡 美國 IDC 資源 - 快車道</a></p>
+<p><strong>正文：</strong></p>
+<p>2021年8月4日早上開始，Netflix（以下簡稱 NF ）封鎖了大量IP和IP段。被封的現象是只能觀看帶有 N 字標記的 NF 自製節目；從版權方外購的節目無法觀賞。</p>
+<p>被封鎖的 IP 包<br>
+⁃ 數據中心 IP 段<br>
+⁃ 商業寬頻 IP 段<br>
+⁃ 單個 IP</p>
+<p>事情發生後，快車道群裡面出現了大量關於本次封鎖的討論。有人說是用了 IPInfo 的數據庫，有人說是用了 MaxMind 數據庫，也有大機場老闆反饋新換上去的家寬 IP 很快就被鎖定。</p>
+<p>能夠在幾個小時內把原來能用的家庭寬帶IP地址，快速識別，並列入黑名單，這不是 IP 數據庫能做到的。畢竟，IP數據庫的更新一般以周為單位。據我們了解，NF檢測 Proxy 的算法其實已經成熟很久了，加之<br>
+NF 能夠記錄到客戶帳戶訪問 Log ，可以用比 IP 數據庫更多的原始信息來檢測 Proxy 。所以，我們推測，這是 NF 自己幹的。</p>
+<p>但是，NF 為什麼要這樣做就頗為讓人費解。主要有 2 個可能。</p>
+<ol>
+<li>版權方逼迫。不太可能。因為 NF 按照播放次數和時長，與外部版權方結算。看的人越多，播放次數越多，版權方收益越大。從經濟上說，版權方不可能去斷自己財路。</li>
+<li>NF 自發。這個比較可能。NF 的一部分盈利就來自於客戶買帳戶的月費超出付給版權方的實際播放結算費。發達經濟體中客戶時薪高，帳戶月費高，相對觀看時間較短，所以是一個划算的生意。反之，一個中國大陸客戶，買了土耳其、印度、阿根廷、巴西區的低價帳戶，再通過 Proxy 來觀看單次點播結算價格高的版權內容，那就是虧本買賣啦。</li>
+</ol>
+<p>如何解鎖？</p>
+<ol>
+<li>動態IP VPS輪作。2台動態IP家庭寬帶 VM，第1個小時走 VM-1 出；第2個小時走 VM-2，並刷新 VM-1 的IP地址；第3個小時再切換回已獲得新IP的 VM-1，並刷新 VM-2 的IP，為下個小時做準備。這樣做的機場如果很多的話，肯出現大量IP被封，電訊商和 NF 都將喜提一堆投訴。</li>
+<li>IPv6子網雪鞋。獲得一個 /64 的 IPv6 子網。將每一個 Proxy 用戶唯一地散列映射到一個 IPv6 地址，避免所有客戶登入 NF 都走同一個 IP 地址。這樣做的問題是：(A) 代理程序需要修改，對不同客戶帳戶用不同的出口 IPv6 地址；(B) DNS 解鎖的機場客戶不適用，機場節點轉至 SNI Proxy 的流量無法區分客戶帳戶；(C) NF 可以輕易修改算法封鎖，將 IPv6 /64 子網視為同一IP地址即可。</li>
+</ol>
+<p>快車道態度：躺平了舒服，別反抗，不要去和算法拼手速。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[京东自动签到脚本部署]]></title>
+        <id>https://icantnotfindaname.github.io/post/jing-dong-qian-dao/</id>
+        <link href="https://icantnotfindaname.github.io/post/jing-dong-qian-dao/">
+        </link>
+        <updated>2021-08-05T15:41:32.000Z</updated>
         <summary type="html"><![CDATA[<p>每天撸它个一百豆，就当交服务器的钱了。<br>
 ...</p>
 ]]></summary>
