@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-20T03:23:32.358Z</updated>
+    <updated>2021-08-20T04:00:55.233Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -10,6 +10,19 @@
     <logo>https://icantnotfindaname.github.io/images/avatar.png</logo>
     <icon>https://icantnotfindaname.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Louispace</rights>
+    <entry>
+        <title type="html"><![CDATA[齐泽克：分析哲学 vs 欧陆哲学]]></title>
+        <id>https://icantnotfindaname.github.io/post/qi-ze-ke-fen-xi-zhe-xue-vs-ou-lu-zhe-xue/</id>
+        <link href="https://icantnotfindaname.github.io/post/qi-ze-ke-fen-xi-zhe-xue-vs-ou-lu-zhe-xue/">
+        </link>
+        <updated>2021-08-20T03:55:34.000Z</updated>
+        <summary type="html"><![CDATA[<p>对我而言，更为感兴趣的一点是齐泽克在视频后半部分提出的有趣观点：<strong>现实是未完成的</strong>。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>对我而言，更为感兴趣的一点是齐泽克在视频后半部分提出的有趣观点：<strong>现实是未完成的</strong>。</p>
+<!-- more -->
+<p>视频地址：https://www.bilibili.com/video/BV17341167ur?share_source=copy_web</p>
+<iframe src="//player.bilibili.com/player.html?aid=419940997&bvid=BV17341167ur&cid=392866033&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[如何看懂生肉？]]></title>
         <id>https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/</id>
