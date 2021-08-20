@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-20T02:55:02.722Z</updated>
+    <updated>2021-08-20T03:01:17.015Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -16,9 +16,9 @@
         <link href="https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/">
         </link>
         <updated>2021-08-19T02:42:44.000Z</updated>
-        <summary type="html"><![CDATA[<p>这个短视频给了一个很简单有效的方法提升听力。</p>
+        <summary type="html"><![CDATA[<p>这个短视频给了一个很简单有效的方法提升听力，但是我找不到原视频的地址了，文中提供的来源为tg群：黑洞资源笔记......</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>这个短视频给了一个很简单有效的方法提升听力。</p>
+        <content type="html"><![CDATA[<p>这个短视频给了一个很简单有效的方法提升听力，但是我找不到原视频的地址了，文中提供的来源为tg群：黑洞资源笔记......</p>
 <!-- more -->
 <p>在开始的时候，务必从一些简单难度的音频开始，接着逐渐加大难度，（如果难度过大，试着调低倍速）。当你发现你可以很轻松地听完整段材料时，不要满足于此，接着调高倍速进行练习。（可以听懂两倍速个人觉得就差不多了）</p>
 <p>视频地址：https://t.me/tieliu/14572</p>
@@ -30,11 +30,9 @@
         <link href="https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/">
         </link>
         <updated>2021-08-18T02:41:06.000Z</updated>
-        <summary type="html"><![CDATA[<p>Nextcloud是一款开源的私有云盘套件，其对健康、教育、金融服务等不同行业都提供了不同的解决方案。可以配合Nextcloud Talk（提供视频通话）和Nextcloud Groupware（提供日历、联系人、邮件等服务）这两款插件进行在线协作。任何人都可以将Nextcloud部署在私有的服务器上，存放个人文件。该软件使用AGPLv3协议，服务端运行在LAMP或LNMP环境下，客户端则可运行在多个平台下。</p>
-<p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件。</p>
+        <summary type="html"><![CDATA[<p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件......</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>Nextcloud是一款开源的私有云盘套件，其对健康、教育、金融服务等不同行业都提供了不同的解决方案。可以配合Nextcloud Talk（提供视频通话）和Nextcloud Groupware（提供日历、联系人、邮件等服务）这两款插件进行在线协作。任何人都可以将Nextcloud部署在私有的服务器上，存放个人文件。该软件使用AGPLv3协议，服务端运行在LAMP或LNMP环境下，客户端则可运行在多个平台下。</p>
-<p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件。</p>
+        <content type="html"><![CDATA[<p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件......</p>
 <!-- more -->
 <p>Snap 是一个类似容器的东西，支持 CentOS7.6+，其他系统可以到 snap 的官网进行查看。</p>
 <p><a href="https://snapcraft.io/install/nextcloud/centos">Install Nextcloud on CentOS using the Snap Store | Snapcraft</a></p>
@@ -67,7 +65,11 @@ ln -s /var/snap/nextcloud/common/nextcloud/data/louis/files /root/nextcloud
         <link href="https://icantnotfindaname.github.io/post/net-speeder-jia-su/">
         </link>
         <updated>2021-08-07T02:38:09.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="1-prepare">1. Prepare</h2>
+        <summary type="html"><![CDATA[<p>注：开启了net-speeder的服务器上对外ping时看到的是4倍，实际网络上是2倍流量。另外两倍是内部dup出来的，不占用带宽。 另外，内部dup包并非是偷懒未判断，是为了更快触发快速重传的。同时，net-speeder不依赖ttl的大小，ttl的大小跟流量无比例关系。不存在windows的ttl大，发包就多的情况。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>注：开启了net-speeder的服务器上对外ping时看到的是4倍，实际网络上是2倍流量。另外两倍是内部dup出来的，不占用带宽。 另外，内部dup包并非是偷懒未判断，是为了更快触发快速重传的。同时，net-speeder不依赖ttl的大小，ttl的大小跟流量无比例关系。不存在windows的ttl大，发包就多的情况。</p>
+<!-- more -->
+<h2 id="1-prepare">1. Prepare</h2>
 <pre><code class="language-json">yum -y install gcc  // install gcc
 gcc --version  // check 
 yum install libnet libpcap libnet-devel libpcap-devel
@@ -96,7 +98,15 @@ nohup /usr/local/net_speeder/net_speeder eth0 &quot;ip&quot; &gt;/dev/null 2&gt;
         <link href="https://icantnotfindaname.github.io/post/you-guan-netflix-jie-suo-de-shuo-ming/">
         </link>
         <updated>2021-08-06T02:36:46.000Z</updated>
-        <content type="html"><![CDATA[<blockquote>
+        <summary type="html"><![CDATA[<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。<br>
+包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。<br>
+Netflix 自制剧可以正常观赏......</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。<br>
+包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。<br>
+Netflix 自制剧可以正常观赏......</p>
+<!-- more -->
+<blockquote>
 <p>[Forwarded from Catnet-的工作日志]</p>
 </blockquote>
 <p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。<br>
@@ -132,11 +142,9 @@ NF 能夠記錄到客戶帳戶訪問 Log ，可以用比 IP 數據庫更多的�
         <link href="https://icantnotfindaname.github.io/post/jing-dong-qian-dao/">
         </link>
         <updated>2021-08-05T15:41:32.000Z</updated>
-        <summary type="html"><![CDATA[<p>每天撸它个一百豆，就当交服务器的钱了。<br>
-...</p>
+        <summary type="html"><![CDATA[<p>每天撸它个一百豆，就当交服务器的钱了。脚本基于青龙面板以及Ninja，不过没有使用互助池等更高级的配置......</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>每天撸它个一百豆，就当交服务器的钱了。<br>
-...</p>
+        <content type="html"><![CDATA[<p>每天撸它个一百豆，就当交服务器的钱了。脚本基于青龙面板以及Ninja，不过没有使用互助池等更高级的配置......</p>
 <!-- more -->
 <h2 id="1-准备">1. 准备</h2>
 <p>一台 Linux 服务器（最好是 centos 系统），京东账号关闭免密支付、打开支付验密设置并修改过于精确的地址以防万一。</p>
