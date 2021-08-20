@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-20T03:03:25.292Z</updated>
+    <updated>2021-08-20T03:08:36.128Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -98,13 +98,9 @@ nohup /usr/local/net_speeder/net_speeder eth0 &quot;ip&quot; &gt;/dev/null 2&gt;
         <link href="https://icantnotfindaname.github.io/post/you-guan-netflix-jie-suo-de-shuo-ming/">
         </link>
         <updated>2021-08-06T02:36:46.000Z</updated>
-        <summary type="html"><![CDATA[<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。<br>
-包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。<br>
-Netflix 自制剧可以正常观赏......</p>
+        <summary type="html"><![CDATA[<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。Netflix 自制剧可以正常观赏......</p>
 ]]></summary>
-        <content type="html"><![CDATA[<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。<br>
-包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。<br>
-Netflix 自制剧可以正常观赏......</p>
+        <content type="html"><![CDATA[<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。Netflix 自制剧可以正常观赏......</p>
 <!-- more -->
 <p>以下文章来源：</p>
 <p><a href="https://t.me/KuaiCheDao_Info/1683">香港 台灣 新加坡 美國 IDC 資源 - 快車道</a></p>
