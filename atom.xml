@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-20T02:50:58.951Z</updated>
+    <updated>2021-08-20T02:55:02.722Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -30,7 +30,13 @@
         <link href="https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/">
         </link>
         <updated>2021-08-18T02:41:06.000Z</updated>
-        <content type="html"><![CDATA[<p>Snap 是一个类似容器的东西，支持 CentOS7.6+，其他系统可以到 snap 的官网进行查看。</p>
+        <summary type="html"><![CDATA[<p>Nextcloud是一款开源的私有云盘套件，其对健康、教育、金融服务等不同行业都提供了不同的解决方案。可以配合Nextcloud Talk（提供视频通话）和Nextcloud Groupware（提供日历、联系人、邮件等服务）这两款插件进行在线协作。任何人都可以将Nextcloud部署在私有的服务器上，存放个人文件。该软件使用AGPLv3协议，服务端运行在LAMP或LNMP环境下，客户端则可运行在多个平台下。</p>
+<p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Nextcloud是一款开源的私有云盘套件，其对健康、教育、金融服务等不同行业都提供了不同的解决方案。可以配合Nextcloud Talk（提供视频通话）和Nextcloud Groupware（提供日历、联系人、邮件等服务）这两款插件进行在线协作。任何人都可以将Nextcloud部署在私有的服务器上，存放个人文件。该软件使用AGPLv3协议，服务端运行在LAMP或LNMP环境下，客户端则可运行在多个平台下。</p>
+<p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件。</p>
+<!-- more -->
+<p>Snap 是一个类似容器的东西，支持 CentOS7.6+，其他系统可以到 snap 的官网进行查看。</p>
 <p><a href="https://snapcraft.io/install/nextcloud/centos">Install Nextcloud on CentOS using the Snap Store | Snapcraft</a></p>
 <p>下载命令如下：</p>
 <pre><code class="language-bash">sudo yum install epel-release
