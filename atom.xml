@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-20T08:58:32.853Z</updated>
+    <updated>2021-08-20T08:59:16.563Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -16,8 +16,12 @@
         <link href="https://icantnotfindaname.github.io/post/qi-ze-ke-xi-fang-zi-you-zhu-yi-mei-ti-bi-er-bu-tan-de-ta-li-ban-xun-su-duo-hui-a-fu-han-de-zhen-zheng-yuan-yin/">
         </link>
         <updated>2021-08-20T05:25:59.000Z</updated>
-        <content type="html"><![CDATA[<p>齐泽克于2021年8月20日在 RT News 上发表了此篇文章，只能说，该来的终究会来。<br>
+        <summary type="html"><![CDATA[<p>齐泽克于2021年8月20日在 RT News 上发表了此篇文章，只能说，该来的终究会来。但基本只是老生常谈。<br>
 原文地址：https://www.rt.com/op-ed/532207-zizek-taliban-retake-afghanistan-reason/</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>齐泽克于2021年8月20日在 RT News 上发表了此篇文章，只能说，该来的终究会来。但基本只是老生常谈。<br>
+原文地址：https://www.rt.com/op-ed/532207-zizek-taliban-retake-afghanistan-reason/</p>
+<!-- more -->
 <p>以下为本人翻译：</p>
 <p>塔利班的8万名士兵重新夺回了阿富汗，城市次第陷落，而披坚执锐的30万政府军却一触即溃，轻易投降。何以至此？</p>
 <p>西方媒体告诉我们，对此可以有几种解释。</p>
