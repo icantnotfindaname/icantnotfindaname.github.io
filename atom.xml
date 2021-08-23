@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-21T06:16:23.351Z</updated>
+    <updated>2021-08-23T02:54:34.225Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -126,6 +126,14 @@ ln -s /var/snap/nextcloud/common/nextcloud/data/louis/files /root/nextcloud
 <p><a href="https://github.com/nextcloud/nextcloud-snap">GitHub - nextcloud/nextcloud-snap: ☁️📦 Nextcloud packaged as a snap</a></p>
 <p>或者官方文档：</p>
 <p><a href="https://docs.nextcloud.com/server/latest/admin_manual/installation/#installation">Installation and server configuration - Nextcloud latest Administration Manual latest documentation</a></p>
+<hr>
+<p>2021.08.23 Update<br>
+如果在服务器直接上传文件到 nextcloud 的 data 目录下，则需要手动扫描才可以在 web 上看到更新内容，推荐方法如下：</p>
+<pre><code class="language-bash">vi /var/snap/nextcloud/28417/nextcloud/config/config.php  // 配置文件路径请自行确定
+
+// 在最后一行添加
+'filesystem_check_changes' =&gt; true,
+</code></pre>
 ]]></content>
     </entry>
     <entry>
