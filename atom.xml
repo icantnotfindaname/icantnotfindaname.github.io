@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-30T11:45:07.423Z</updated>
+    <updated>2021-08-30T11:50:20.814Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -16,7 +16,11 @@
         <link href="https://icantnotfindaname.github.io/post/guan-yu-fu-ke/">
         </link>
         <updated>2021-08-30T11:33:21.000Z</updated>
-        <content type="html"><![CDATA[<ol>
+        <summary type="html"><![CDATA[<p>总有一天这会变成一篇完整的，用学术或文学话语铸就的，建立在断壁残垣的思想之上的文本。在福柯处，有一种如在其身的强烈共鸣。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>总有一天这会变成一篇完整的，用学术或文学话语铸就的，建立在断壁残垣的思想之上的文本。在福柯处，有一种如在其身的强烈共鸣。</p>
+<!-- more -->
+<ol>
 <li>对于边缘体验的过分追求 ❌ 但是在语言上，在除却身体之外的他处，是有道理的</li>
 <li>知识考古学 ⭕</li>
 <li>谱系学 这个理论吸引人的地方在于对现存理论话语的冲突，一种难以置信的正确感</li>
