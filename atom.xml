@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-08-23T02:54:34.225Z</updated>
+    <updated>2021-08-30T11:45:07.423Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -10,6 +10,21 @@
     <logo>https://icantnotfindaname.github.io/images/avatar.png</logo>
     <icon>https://icantnotfindaname.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Louispace</rights>
+    <entry>
+        <title type="html"><![CDATA[关于福柯]]></title>
+        <id>https://icantnotfindaname.github.io/post/guan-yu-fu-ke/</id>
+        <link href="https://icantnotfindaname.github.io/post/guan-yu-fu-ke/">
+        </link>
+        <updated>2021-08-30T11:33:21.000Z</updated>
+        <content type="html"><![CDATA[<ol>
+<li>对于边缘体验的过分追求 ❌ 但是在语言上，在除却身体之外的他处，是有道理的</li>
+<li>知识考古学 ⭕</li>
+<li>谱系学 这个理论吸引人的地方在于对现存理论话语的冲突，一种难以置信的正确感</li>
+<li>权力 —— 在福柯处，本质是一种反抗，知识分子就是要对现有的权力体系进行质疑 —— 无论你是否身在其内。【我说：离经叛道是艺术家的责任，明辨是非是文学家的义务。无论什么时候，这都表现成一种激烈的斗争，一种对少数的体谅和对多数派的本能质疑，一种不间断的反思，无休止的自我扬弃】</li>
+<li>人死了 ⭕ 强力的悲观，自尼采一脉相承而来</li>
+</ol>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因]]></title>
         <id>https://icantnotfindaname.github.io/post/qi-ze-ke-xi-fang-zi-you-zhu-yi-mei-ti-bi-er-bu-tan-de-ta-li-ban-xun-su-duo-hui-a-fu-han-de-zhen-zheng-yuan-yin/</id>
