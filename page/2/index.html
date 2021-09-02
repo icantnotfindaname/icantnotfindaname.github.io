@@ -154,7 +154,7 @@
   <div class="main-continer">
     
     <div
-      class="section-layout  gemini">
+      class="section-layout gemini ">
       <div class="section-layout-wrapper">
         <div id="sidebarMeta" class="sidebar">
     
@@ -223,108 +223,115 @@
     });
   }
   </script>
-        <div class="section-box tag-line box-shadow-wrapper">
-          <section class="section tags-section posts-expand bg-color">
-            <div class="padding-wrapper">
-  <div class="tag-timeline-box">
-    <div class="tag-timeline-wrapper">
-      <div class="tag-timeline-title">
-        <h2>
-          Philosophy
-          <small>标签</small>
-        </h2>
+        <div class="section-box gemini">
+          <section class="section  posts-expand slide-down-in">
+            
+  <article class="post-list-box  post box-shadow-wrapper">
+    <div class="article-wrapper bg-color">
+      <header class="post-header">
+  <h1 class="post-title">
+    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/jing-dong-qian-dao/">
+      京东自动签到脚本部署
+    </a>
+  </h1>
+  <div class="post-meta">
+    
+    <span class="meta-item pc-show">
+      <i class="fa fa-calendar-o"></i>
+      <span>发布于</span>
+      <span>2021-08-05</span>
+      <span class="post-meta-divider pc-show">|</span>
+    </span>
+    
+    <span class="meta-item">
+      <i class="fa fa-folder-o"></i>
+      <span class="pc-show">分类于</span>
+      
+      
+      <a href="https://icantnotfindaname.github.io/tag/YpdmMR3r7/">
+        <span>VPS</span>
+      </a>、
+      
+      
+      
+      <a href="https://icantnotfindaname.github.io/tag/Hbe3VERgqS/">
+        <span>Skill</span>
+      </a>、
+      
+      
+      
+      <a href="https://icantnotfindaname.github.io/tag/-5x0jD7Qfd/">
+        <span>Docker</span>
+      </a>、
+      
+      
+      
+      <a href="https://icantnotfindaname.github.io/tag/HbiuaTuLgI/">
+        <span>Linux</span>
+      </a>
+      
+      
+    </span>
+    <span class="post-meta-divider">|</span>
+    
+    <span class="meta-item">
+      <i class="fa fa-clock-o"></i>
+      <span>4分钟</span>
+    </span>
+    <span class="meta-item">
+      <span class="post-meta-divider">|</span>
+      <i class="fa fa-file-word-o"></i>
+      <span>714<span class="pc-show">字数</span></span>
+    </span>
+    
+  </div>
+</header>
+      <div class="post-body">
+        
+        
+          <p>每天撸它个一百豆，就当交服务器的钱了。脚本基于青龙面板以及Ninja，不过没有使用互助池等更高级的配置......</p>
+
+        
+        
+        <div class="post-button text-center">
+          <a class="btn" href="https://icantnotfindaname.github.io/post/jing-dong-qian-dao/" rel="contents">
+            阅读全文 »
+          </a>
+        </div>
+        
       </div>
       
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/post/qi-ze-ke-xi-fang-zi-you-zhu-yi-mei-ti-bi-er-bu-tan-de-ta-li-ban-xun-su-duo-hui-a-fu-han-de-zhen-zheng-yuan-yin/">
-        <div class="motion-warpper">
-          <div class="tag-post-node">
-            <h1>
-              08-20
-              <small>齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因</small>
-            </h1>
-          </div>
-        </div>
-      </a>
-      
-      
-      
-      
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/post/qi-ze-ke-fen-xi-zhe-xue-vs-ou-lu-zhe-xue/">
-        <div class="motion-warpper">
-          <div class="tag-post-node">
-            <h1>
-              08-20
-              <small>齐泽克：分析哲学 vs 欧陆哲学</small>
-            </h1>
-          </div>
-        </div>
-      </a>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
     </div>
-  </div>
+  </article>
+  
+            
+            
+<div class="page bg-color">
+  <ul class="pagination-ul">
+    
+      <li class="pagination-dir">
+        <a href="https://icantnotfindaname.github.io/">
+          <i class="fa fa-angle-left"></i>
+        </a>
+      </li>
+    
+    
+      
+        <li class="pagination-li ">
+            <a href="/page/../">
+              1
+            </a>
+        </li>
+      
+        <li class="pagination-li pagination-active">
+            <a href="/page/2">
+              2
+            </a>
+        </li>
+      
+    
+    
+  </ul>
 </div>
           </section>
         </div>
@@ -500,6 +507,36 @@
   // 代码高亮
   hljs.initHighlightingOnLoad();
 
+</script>
+    <div class="light-box" id="light_box"></div>
+<script>
+  let imgs = document.querySelectorAll('.post-body img');
+  let lightBox = document.querySelector('#light_box');
+  lightBox.addEventListener('mousedown', (e) => {
+    e.preventDefault()
+  })
+  lightBox.addEventListener('mousewheel', (e) => {
+    e.preventDefault()
+  })
+  let width = window.innerWidth * 0.8;
+  lightBox.onclick = () => {
+    let img = lightBox.querySelector('img');
+    lightBox.style = '';
+    img && img.remove();
+  }
+  imgs.forEach(item => {
+    item.onclick = function (e) {
+      let lightImg = document.createElement('img');
+      lightImg.src = this.src;
+      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
+      lightImg.style = `width: ${width}px; border: 1px solid #fff; border-radius: 2px;`;
+      lightImg.onclick = function () {
+        lightBox.style = '';
+        this.remove();
+      }
+      lightBox.append(lightImg);
+    }
+  })
 </script>
   </div>
 </body>
