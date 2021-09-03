@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-03T09:12:27.898Z</updated>
+    <updated>2021-09-03T09:13:04.106Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -27,7 +27,7 @@
 </code></pre>
 <p>首先两个字符串的指针都从头开始匹配，直到第六个字母的时候发现不匹配。这要是暴力匹配算法就会直接把文本串的指针退回指向第二个字符，模式串指针退回指向开始字符，然后重新开始尝试匹配。但是 KMP 算法就不一样了，本质其实是利用了已匹配字符串的信息，因为很明显模式串往右移一位显然还是不能匹配啊，所以就直接把模式串右移到以下位置：</p>
 <pre><code>文本串：aabaabaaf
-模式串：     aabaaf
+模式串：xxxaabaaf
 </code></pre>
 <p>从计算机的角度来说，实现这个效果的方法就是文本串指针保持不动，模式串指针退回指向第三个字符（b）然后继续往后匹配。</p>
 <h3 id="next-数组的求法">next 数组的求法</h3>
