@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-03T09:10:28.773Z</updated>
+    <updated>2021-09-03T09:12:27.898Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -20,10 +20,8 @@
 ]]></summary>
         <content type="html"><![CDATA[<p>这个算法堪称整个数据结构考研中最难的一个算法，第一次看的时候也是一脸懵逼。为了表达对它的敬意，写一篇文章集中解决ta。</p>
 <!-- more -->
-<ol>
-<li>next 数组的作用<br>
-这个其实很好理解，next 数组就是为了避免像暴力匹配算法一样，一发现文本串与模式串不匹配就必须重置指针重新从头开始匹配。使用了 next 数组之后，文本串的指针可以不用回溯，所以搜索效率才可以达到 O(m) 其中 m 是文本串的长度。下面给出一个例子：</li>
-</ol>
+<h3 id="next-数组的作用">next 数组的作用</h3>
+<p>这个其实很好理解，next 数组就是为了避免像暴力匹配算法一样，一发现文本串与模式串不匹配就必须重置指针重新从头开始匹配。使用了 next 数组之后，文本串的指针可以不用回溯，所以搜索效率才可以达到 O(m) 其中 m 是文本串的长度。下面给出一个例子：</p>
 <pre><code>文本串：aabaabaaf
 模式串：aabaaf
 </code></pre>
@@ -32,10 +30,8 @@
 模式串：     aabaaf
 </code></pre>
 <p>从计算机的角度来说，实现这个效果的方法就是文本串指针保持不动，模式串指针退回指向第三个字符（b）然后继续往后匹配。</p>
-<ol start="2">
-<li>next 数组的求法<br>
-数组的值只与模式串有关而与文本串无关，next[i] 的含义为：i 包括 i 之前的子数组的<strong>最大相等前后缀的长度</strong>。这里还需要注意一下：前缀的含义是一个字符串除去最后一个字母之外的所有从第一个字母开始的连续字串，后缀也是差不多的道理。所以比如“aabaa”这个字串的最大相等前后缀就是“aa”，所以其最大相等前后缀长度就是 2；“aaaaa”这个字串的最大相等前后缀是“aaaa”，所以最大相等前后缀长度就是 4。以下是具体代码（C++）:</li>
-</ol>
+<h3 id="next-数组的求法">next 数组的求法</h3>
+<p>数组的值只与模式串有关而与文本串无关，next[i] 的含义为：i 包括 i 之前的子数组的<strong>最大相等前后缀的长度</strong>。这里还需要注意一下：前缀的含义是一个字符串除去最后一个字母之外的所有从第一个字母开始的连续字串，后缀也是差不多的道理。所以比如“aabaa”这个字串的最大相等前后缀就是“aa”，所以其最大相等前后缀长度就是 2；“aaaaa”这个字串的最大相等前后缀是“aaaa”，所以最大相等前后缀长度就是 4。以下是具体代码（C++）:</p>
 <pre><code class="language-C++">void getNext(int *next, string s) {
     int j = 0;
     next[0] = 0;
@@ -49,10 +45,8 @@
 } 
 </code></pre>
 <p>前面首先对指针和数组进行初始化，重点语句是下面这句，如果新指向字符不匹配，就要重新回到上一个子串（不包含新字符）的最大相等字符长度，然后重新匹配。（这里说的不太清楚，请自行领悟，最好自己在纸上写一下）</p>
-<ol start="3">
-<li>KMP 算法写法<br>
-求出 next 数组之后就好办了，每次匹配到不符合的时候，就找已经匹配完的子串的最大相等前后缀，也就是直接查 next 数组，然后把模式串的指针退回去继续匹配就行了。代码如下：</li>
-</ol>
+<h3 id="kmp-算法写法">KMP 算法写法</h3>
+<p>求出 next 数组之后就好办了，每次匹配到不符合的时候，就找已经匹配完的子串的最大相等前后缀，也就是直接查 next 数组，然后把模式串的指针退回去继续匹配就行了。代码如下：</p>
 <pre><code class="language-C++">int strStr(string s, string t) {
     if (t.size() == 0)
         return 0;
