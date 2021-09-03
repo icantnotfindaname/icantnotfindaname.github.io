@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-02T11:15:43.969Z</updated>
+    <updated>2021-09-03T09:10:28.773Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -10,6 +10,69 @@
     <logo>https://icantnotfindaname.github.io/images/avatar.png</logo>
     <icon>https://icantnotfindaname.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Louispace</rights>
+    <entry>
+        <title type="html"><![CDATA[KMP 算法]]></title>
+        <id>https://icantnotfindaname.github.io/post/kmp-suan-fa/</id>
+        <link href="https://icantnotfindaname.github.io/post/kmp-suan-fa/">
+        </link>
+        <updated>2021-09-03T08:34:48.000Z</updated>
+        <summary type="html"><![CDATA[<p>这个算法堪称整个数据结构考研中最难的一个算法，第一次看的时候也是一脸懵逼。为了表达对它的敬意，写一篇文章集中解决ta。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>这个算法堪称整个数据结构考研中最难的一个算法，第一次看的时候也是一脸懵逼。为了表达对它的敬意，写一篇文章集中解决ta。</p>
+<!-- more -->
+<ol>
+<li>next 数组的作用<br>
+这个其实很好理解，next 数组就是为了避免像暴力匹配算法一样，一发现文本串与模式串不匹配就必须重置指针重新从头开始匹配。使用了 next 数组之后，文本串的指针可以不用回溯，所以搜索效率才可以达到 O(m) 其中 m 是文本串的长度。下面给出一个例子：</li>
+</ol>
+<pre><code>文本串：aabaabaaf
+模式串：aabaaf
+</code></pre>
+<p>首先两个字符串的指针都从头开始匹配，直到第六个字母的时候发现不匹配。这要是暴力匹配算法就会直接把文本串的指针退回指向第二个字符，模式串指针退回指向开始字符，然后重新开始尝试匹配。但是 KMP 算法就不一样了，本质其实是利用了已匹配字符串的信息，因为很明显模式串往右移一位显然还是不能匹配啊，所以就直接把模式串右移到以下位置：</p>
+<pre><code>文本串：aabaabaaf
+模式串：     aabaaf
+</code></pre>
+<p>从计算机的角度来说，实现这个效果的方法就是文本串指针保持不动，模式串指针退回指向第三个字符（b）然后继续往后匹配。</p>
+<ol start="2">
+<li>next 数组的求法<br>
+数组的值只与模式串有关而与文本串无关，next[i] 的含义为：i 包括 i 之前的子数组的<strong>最大相等前后缀的长度</strong>。这里还需要注意一下：前缀的含义是一个字符串除去最后一个字母之外的所有从第一个字母开始的连续字串，后缀也是差不多的道理。所以比如“aabaa”这个字串的最大相等前后缀就是“aa”，所以其最大相等前后缀长度就是 2；“aaaaa”这个字串的最大相等前后缀是“aaaa”，所以最大相等前后缀长度就是 4。以下是具体代码（C++）:</li>
+</ol>
+<pre><code class="language-C++">void getNext(int *next, string s) {
+    int j = 0;
+    next[0] = 0;
+    for (int i = 1; i &lt; s.size(); i++) {
+        while (j &gt; 0 &amp;&amp; s[i] != s[j]) 
+            j = next[j-1];  // 重点语句
+        if (s[i] == s[j])
+            ++j;
+        next[i] = j;
+    }
+} 
+</code></pre>
+<p>前面首先对指针和数组进行初始化，重点语句是下面这句，如果新指向字符不匹配，就要重新回到上一个子串（不包含新字符）的最大相等字符长度，然后重新匹配。（这里说的不太清楚，请自行领悟，最好自己在纸上写一下）</p>
+<ol start="3">
+<li>KMP 算法写法<br>
+求出 next 数组之后就好办了，每次匹配到不符合的时候，就找已经匹配完的子串的最大相等前后缀，也就是直接查 next 数组，然后把模式串的指针退回去继续匹配就行了。代码如下：</li>
+</ol>
+<pre><code class="language-C++">int strStr(string s, string t) {
+    if (t.size() == 0)
+        return 0;
+    int next[t.size()];
+    getNext(next, t);
+    int j = 0;
+    for (int i = 0; i &lt; s.size(); i++) {
+        while (j &gt; 0 &amp;&amp; s[i] != t[j]) 
+            j = next[j - 1];
+        if (s[i] == t[j])
+            ++j;
+        if (j == t.size())  // 注意这里的判断条件，不是 j == t.size() - 1
+            return (i - t.size() + 1);
+    }
+    return -1;
+}
+</code></pre>
+<p>结束。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[二叉树遍历的非递归做法]]></title>
         <id>https://icantnotfindaname.github.io/post/er-cha-shu-bian-li-de-fei-di-gui-zuo-fa/</id>
