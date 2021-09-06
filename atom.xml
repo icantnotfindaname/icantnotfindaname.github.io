@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-03T09:13:04.106Z</updated>
+    <updated>2021-09-06T09:50:41.469Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -10,6 +10,120 @@
     <logo>https://icantnotfindaname.github.io/images/avatar.png</logo>
     <icon>https://icantnotfindaname.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Louispace</rights>
+    <entry>
+        <title type="html"><![CDATA[递归与回溯：以二叉树为例]]></title>
+        <id>https://icantnotfindaname.github.io/post/di-gui-yu-hui-su-yi-er-cha-shu-wei-li/</id>
+        <link href="https://icantnotfindaname.github.io/post/di-gui-yu-hui-su-yi-er-cha-shu-wei-li/">
+        </link>
+        <updated>2021-09-06T09:23:15.000Z</updated>
+        <summary type="html"><![CDATA[<p>学了三年，还在写这种内容，唉…… 但不得不说，这是一个十分重要的基础问题。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>学了三年，还在写这种内容，唉…… 但不得不说，这是一个十分重要的基础问题。</p>
+<!-- more -->
+<p>这其实是力扣上的一道题：给定一个二叉树，找出其最大深度。</p>
+<p>示例：</p>
+<p>给定二叉树 [3,9,20,null,null,15,7]，</p>
+<pre><code>3
+</code></pre>
+<p>/ <br>
+9  20<br>
+/  <br>
+15   7</p>
+<p>返回它的最大深度 3 。</p>
+<h2 id="递归">递归</h2>
+<p>递归有三个标准动作：</p>
+<ol>
+<li>确定函数参数以及返回的类型</li>
+<li>确定递归的终止条件</li>
+<li>确定单层递归的逻辑</li>
+</ol>
+<p>用上面的题为例：</p>
+<ol>
+<li>函数的参数当然就是 <code>TreeNode* root</code> 了，求最大深度，返回的类型就是 <code>int</code> 。</li>
+<li>递归的终止条件就是 <code>root == NULL</code>，这个时候直接 <code>return 0</code> 。</li>
+<li>单层的递归逻辑其实也很好想，其实就是得到左右子树的最大深度，然后比较之后挑一个比较大的，加上自己本身这一层就是当前接地点的最大深度。</li>
+</ol>
+<p>然后就可以写代码了：</p>
+<pre><code class="language-C++">int maxDepth(TreeNode* root) {
+    if (root == NULL) return 0;
+    int left = maxDepth(root-&gt;left);
+    int right = maxDepth(root-&gt;right);
+    int res = left &gt; right ? left : right;
+    return res + 1;
+}
+</code></pre>
+<p>这就是一个完整的递归逻辑，最后还有一步就是简化代码（个人习惯，我喜欢首先确定逻辑无误之后再开始对代码进行简化处理，不知道其他人是怎么做的），简化之后的代码如下：</p>
+<pre><code class="language-C++">int maxDepth(TreeNode* root) {
+    if (root == NULL) return 0;
+    return 1 + max(maxDepth(root-&gt;left), maxDepth(root-&gt;right));
+}
+</code></pre>
+<p>注意以上都省略了结构体的编写以及 <code>#include</code> 部分，其中 <code>max</code> 函数位于 <code>#include&lt;algorithm&gt;</code> 中。</p>
+<h2 id="回溯">回溯</h2>
+<p>以上我们的做法其实是把求最大深度的问题转换成了求树的高度的问题，所以用的是后序遍历式的做法，但其实我们在求深度的时候用的应该是前序遍历式的算法，在前序遍历式算法中，为了达到类似递归的效果，我们就要使用回溯。<strong>回溯和递归是分不开的。</strong></p>
+<p>那么上面的问题用前序遍历 + 回溯应该怎么做呢？代码如下：</p>
+<pre><code class="language-C++">int result;
+void getDepth(TreeNode *root, int depth) {
+    result = depth &gt; result ? depth : result;
+    if (root-&gt;left == NULL &amp;&amp; root-&gt;right == NULL) return;
+    if (root-&gt;left != NULL) {
+        depth++;
+        getDepth(root-&gt;left, depth);
+        depth--;  // 回溯
+    }
+    if (root-&gt;right != NULL) {
+        depth++;
+        getDepth(root-&gt;right, depth);
+        depth--;  // 回溯
+    }
+    return;
+}
+int maxDepth(TreeNode* root) {
+    result = 0;
+    if (root == NULL) return 0;
+    getDepth(root, 1);
+    return result;
+}
+</code></pre>
+<p>这段代码需要注意两个点，一个是 <code>getDepth</code> 函数中的 <code>depth</code> 参数千万不能写成引用型，一个是注意在函数中是如何完成回溯的，在这里利用的是 <code>depth</code> 的增减。但有的时候回溯是没有这么明显的，会隐藏在函数体之中，比如上面的代码其实可以简化，如下所示：</p>
+<pre><code class="language-C++">int result;
+void getDepth(TreeNode* root, int depth) {
+    result = depth &gt; result ? depth : result;
+    if (root-&gt;left == NULL &amp;&amp; root-&gt;right == NULL) return; 
+    if (root-&gt;left != NULL) getDepth(root-&gt;left, depth +1);  // 回溯在此
+    if (root-&gt;right != NULL) getDepth(root-&gt;right, depth + 1);
+    return;
+}
+int maxDepth(TreeNode* root) {
+    result = 0;
+    if (root == NULL) return 0;
+    getDepth(root, 1);
+    return result;
+}
+</code></pre>
+<h2 id="总结">总结</h2>
+<ol>
+<li>递归的三大步骤</li>
+<li>回溯的思想和写法</li>
+<li>代码简化</li>
+</ol>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[补码浅析]]></title>
+        <id>https://icantnotfindaname.github.io/post/bu-ma-qian-xi/</id>
+        <link href="https://icantnotfindaname.github.io/post/bu-ma-qian-xi/">
+        </link>
+        <updated>2021-09-05T08:02:28.000Z</updated>
+        <content type="html"><![CDATA[<p>补码的定义：给出长度为 n 的数值 y，则 y 的以基数 b 的补码为：b^n - y （即 b 的补码）</p>
+<p>说补码首先就得说反码，因为反码是补码的一个过渡，二者的目的都在于改进计算机加减法运算的性能。当没有反码和补码的时候，减法虽然也可以转变成加法去进行运算，但是问题在于，比如，当你计算 1 - 1 的时候，用源码去计算的时候，就会变成 1 + -1 也就是 0001 + 1001，显然算出来根本不是 0。而且还有另外一个问题是用原码表示数字中有一个 +0 和一个 -0，这显然是毫无意义的。于是为了解决第一个问题，人们发明了反码。</p>
+<p>反码：正数的反码和原码一样，负数的反码是符号位不变其它位取反。这样就解决了上面的第一个问题，上面的二进制加法用算出来就是  0001 + 1110 = 1111 正好是 -0 的反码，这样就得到了一个正确的结果。但第二个问题依然没有解决。</p>
+<p>于是补码来了，这才是最终的解决形态，解决了上述的第二个问题。补码在二进制中就是反码加一，于是可以看到上述 -0 的反码加一之后变成了 10000，丢弃掉溢出的位之后就变成了 0000，刚好是 +0，完美解决。同时，由于只有一种 0 的表示方式，所以补码可以多表示一个负数。</p>
+<p>另外，再从更宏观的计算考虑，也就是考虑开头的补码定义，在十进制中，55 - 50 在长度为 3 的情况下就可以写成 45 + 50 = 95 (这里丢弃掉了最高位) 补码刚好 5，得到了正确结果。那么这一切的原理是什么呢？</p>
+<p>假设 x ＞ y，则 x - y = b^n - x + b^n + y = b^n - x + y 原码刚好就是 x - y 顺利回来了。</p>
+<p>手推，但是我想这应该就是原理了吧。</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[KMP 算法]]></title>
         <id>https://icantnotfindaname.github.io/post/kmp-suan-fa/</id>
@@ -364,115 +478,6 @@ nohup /usr/local/net_speeder/net_speeder eth0 &quot;ip&quot; &gt;/dev/null 2&gt;
 <hr>
 <h3 id="20210807-update">2021.08.07 Update</h3>
 <p>晚高峰时速度大致提升20%，但这种技术终归是损人利己，还是关了罢。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[有关Netflix解锁的说明]]></title>
-        <id>https://icantnotfindaname.github.io/post/you-guan-netflix-jie-suo-de-shuo-ming/</id>
-        <link href="https://icantnotfindaname.github.io/post/you-guan-netflix-jie-suo-de-shuo-ming/">
-        </link>
-        <updated>2021-08-06T02:36:46.000Z</updated>
-        <summary type="html"><![CDATA[<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。Netflix 自制剧可以正常观赏......</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>今天6时许，有网友发现，大量此前能够观看非 Netflix 版权资源的代理 IP 已不起作用。包括腾讯云101、绿云195，阿里云161、Cloudflare WARP 等大量此前能够解锁的 IP 受到影响。Netflix 自制剧可以正常观赏......</p>
-<!-- more -->
-<p>以下文章来源：</p>
-<p><a href="https://t.me/KuaiCheDao_Info/1683">香港 台灣 新加坡 美國 IDC 資源 - 快車道</a></p>
-<p><strong>正文：</strong></p>
-<p>2021年8月4日早上開始，Netflix（以下簡稱 NF ）封鎖了大量IP和IP段。被封的現象是只能觀看帶有 N 字標記的 NF 自製節目；從版權方外購的節目無法觀賞。</p>
-<p>被封鎖的 IP 包<br>
-⁃ 數據中心 IP 段<br>
-⁃ 商業寬頻 IP 段<br>
-⁃ 單個 IP</p>
-<p>事情發生後，快車道群裡面出現了大量關於本次封鎖的討論。有人說是用了 IPInfo 的數據庫，有人說是用了 MaxMind 數據庫，也有大機場老闆反饋新換上去的家寬 IP 很快就被鎖定。</p>
-<p>能夠在幾個小時內把原來能用的家庭寬帶IP地址，快速識別，並列入黑名單，這不是 IP 數據庫能做到的。畢竟，IP數據庫的更新一般以周為單位。據我們了解，NF檢測 Proxy 的算法其實已經成熟很久了，加之<br>
-NF 能夠記錄到客戶帳戶訪問 Log ，可以用比 IP 數據庫更多的原始信息來檢測 Proxy 。所以，我們推測，這是 NF 自己幹的。</p>
-<p>但是，NF 為什麼要這樣做就頗為讓人費解。主要有 2 個可能。</p>
-<ol>
-<li>版權方逼迫。不太可能。因為 NF 按照播放次數和時長，與外部版權方結算。看的人越多，播放次數越多，版權方收益越大。從經濟上說，版權方不可能去斷自己財路。</li>
-<li>NF 自發。這個比較可能。NF 的一部分盈利就來自於客戶買帳戶的月費超出付給版權方的實際播放結算費。發達經濟體中客戶時薪高，帳戶月費高，相對觀看時間較短，所以是一個划算的生意。反之，一個中國大陸客戶，買了土耳其、印度、阿根廷、巴西區的低價帳戶，再通過 Proxy 來觀看單次點播結算價格高的版權內容，那就是虧本買賣啦。</li>
-</ol>
-<p>如何解鎖？</p>
-<ol>
-<li>動態IP VPS輪作。2台動態IP家庭寬帶 VM，第1個小時走 VM-1 出；第2個小時走 VM-2，並刷新 VM-1 的IP地址；第3個小時再切換回已獲得新IP的 VM-1，並刷新 VM-2 的IP，為下個小時做準備。這樣做的機場如果很多的話，肯出現大量IP被封，電訊商和 NF 都將喜提一堆投訴。</li>
-<li>IPv6子網雪鞋。獲得一個 /64 的 IPv6 子網。將每一個 Proxy 用戶唯一地散列映射到一個 IPv6 地址，避免所有客戶登入 NF 都走同一個 IP 地址。這樣做的問題是：(A) 代理程序需要修改，對不同客戶帳戶用不同的出口 IPv6 地址；(B) DNS 解鎖的機場客戶不適用，機場節點轉至 SNI Proxy 的流量無法區分客戶帳戶；(C) NF 可以輕易修改算法封鎖，將 IPv6 /64 子網視為同一IP地址即可。</li>
-</ol>
-<p>快車道態度：躺平了舒服，別反抗，不要去和算法拼手速。</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[京东自动签到脚本部署]]></title>
-        <id>https://icantnotfindaname.github.io/post/jing-dong-qian-dao/</id>
-        <link href="https://icantnotfindaname.github.io/post/jing-dong-qian-dao/">
-        </link>
-        <updated>2021-08-05T15:41:32.000Z</updated>
-        <summary type="html"><![CDATA[<p>每天撸它个一百豆，就当交服务器的钱了。脚本基于青龙面板以及Ninja，不过没有使用互助池等更高级的配置......</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>每天撸它个一百豆，就当交服务器的钱了。脚本基于青龙面板以及Ninja，不过没有使用互助池等更高级的配置......</p>
-<!-- more -->
-<h2 id="1-准备">1. 准备</h2>
-<p>一台 Linux 服务器（最好是 centos 系统），京东账号关闭免密支付、打开支付验密设置并修改过于精确的地址以防万一。</p>
-<h2 id="2-安装docker">2. 安装Docker</h2>
-<pre><code class="language-bash">sudo yum check-update
-curl -fsSL https://get.docker.com/ | sh
-sudo systemctl start docker
-sudo systemctl status docker
-sudo systemctl enable docker
-</code></pre>
-<h2 id="3-安装青龙面板">3. 安装青龙面板</h2>
-<pre><code class="language-bash">docker run -dit \
-  -v /ql/config:/ql/config \
-  -v /ql/log:/ql/log \
-  -v /ql/db:/ql/db \
-  -v /ql/repo:/ql/repo \
-  -v /ql/raw:/ql/raw \
-  -v /ql/scripts:/ql/scripts \
-  -v /ql/jbot:/ql/jbot \
-  -v /ql/ninja:/ql/ninja \
-  -p 5700:5700 \
-  -p 5701:5701 \
-  --name qinglong \
-  --hostname qinglong \
-  --restart unless-stopped \
-  whyour/qinglong:latest
-</code></pre>
-<p>如果你的服务器开启了防火墙，还需要放行 <code>5700</code> 和 <code>5701</code> 端口。</p>
-<p>接着打开 <code>ip:5700</code> 就可以访问面板了，默认用户名密码都是 <code>admin</code> 。登录之后会提示你修改密码，使用下面的指令打开配置文件：</p>
-<pre><code class="language-bash">vi /ql/config/auth.json
-</code></pre>
-<p>修改成你自己想要的用户名和密码。接着重新登录到面板，添加签到仓库如下：</p>
-<pre><code class="language-bash">// 更新longzhuzhu仓库
-ql repo https://ghproxy.com/https://github.com/nianyuguai/longzhuzhu.git &quot;qx&quot;
-
-// 更新i-chenzi仓库
-ql repo https://ghproxy.com/https://github.com/monk-coder/dust.git &quot;i-chenzhe|normal|member|car&quot; &quot;backup&quot;
-
-// 更新lxk仓库
-ql repo https://ghproxy.com/https://github.com/chinnkarahoi/jd_scripts.git &quot;jd_|jx_|getJDCookie&quot; &quot;activity|backUp&quot; &quot;^jd[^_]|USER&quot;
-
-// 更新whyour仓库
-ql repo https://ghproxy.com/https://github.com/whyour/hundun.git &quot;quanx&quot; &quot;tokens|caiyun|didi|donate|fold|Env&quot;
-</code></pre>
-<h2 id="4-安装-ninja">4. 安装 Ninja</h2>
-<p>执行以下命令即可安装。</p>
-<pre><code class="language-bash">sudo docker exec -it qinglong bash ## 进入青龙容器，qinglong为容器名称，根据自己
-git clone https://github.com/MoonBegonia/ninja.git /ql/ninja ## 拉取ninja 
-cd /ql/ninja/backend ## 进入ninja后端文件夹
-pnpm install ## 安装ninja
-pm2 start ## 启动ninja
-</code></pre>
-<h2 id="5-配置面板">5. 配置面板</h2>
-<p>首先添加启动任务到 <code>extra.sh</code> ，脚本内容如下：</p>
-<pre><code class="language-bash">cd /ql/ninja/backend
-pm2 start
-</code></pre>
-<p>接着在浏览器里输入 <code>ip:5701</code> 访问 Ninja 面板，使用京东扫码登录账号之后就可以在青龙面板的环境变量里查看到自己的 cookie。</p>
-<p>最后手动执行一下一开始创建的四个任务，（可能会失败，但只要有一个成功就可以了），然后刷新一下面板页面，就会发现任务栏里多了很多京东的自动执行任务，到这里就说明已经配置成功了。</p>
-<hr>
-<h3 id="20210806-update">2021.08.06 Update</h3>
-<p>查看日志的时候发现某些脚本有运行错误，于是找了一个库网站，可以换个源试试：</p>
-<p><a href="https://www.kejiwanjia.com/notes/4839.html">常用的库集锦（8.4新增yuannian1112） - 科技玩家</a></p>
-<p>还有一些错误是因为缺少依赖库引起的，VPS进入对应的容器里面添加一下依赖库就可以了。</p>
 ]]></content>
     </entry>
 </feed>

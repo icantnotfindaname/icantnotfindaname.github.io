@@ -8,7 +8,7 @@
 <meta name="keywords" content="Louispace">
 <meta name="description" content="想做你的对手">
 <meta name="theme-color" content="#000">
-<title>齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因 | Louispace</title>
+<title>Louispace</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1630921832172">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/gemini.css">
@@ -29,8 +29,6 @@
 
 
 
-  <meta name="description" content="齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因" />
-  <meta name="keywords" content="Translate,Article,Philosophy,Zizek" />
 </head>
 
 <body>
@@ -156,26 +154,10 @@
   <div class="main-continer">
     
     <div
-      class="section-layout gemini ">
+      class="section-layout  gemini">
       <div class="section-layout-wrapper">
-        
-
-<div class="sidebar">
-  
-    <div class="sidebar-box box-shadow-wrapper bg-color right-motion" id="sidebar">
-      
-        <div class="post-list-sidebar">
-          <div class="sidebar-title">
-            <span id="tocSideBar" class="sidebar-title-item sidebar-title-active">文章目录</span>
-            <span id="metaSideBar" class="sidebar-title-item">站点概览</span>
-          </div>
-        </div>
-      
-      <div class="sidebar-body gemini" id="sidebar_body">
-        
-          
-            <div class="post-side-meta" id="post_side_meta">
-              
+        <div id="sidebarMeta" class="sidebar">
+    
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -226,434 +208,142 @@
 
 
 </div>
-            </div>
-            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
-              <div class="toc-box right-motion">
-  <div class="toc-wrapper auto-number auto"
-    id="toc_wrapper">
-    <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#%E8%8B%B1%E6%96%87%E5%8E%9F%E7%89%88">英文原版</a></li>
-</ul>
-</li>
-</ul>
-
-  </div>
 </div>
-
 <script>
-
-  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
-  let active = 'active-show', activeClass = 'active-current';
-  let tocWrapper = document.querySelector('#toc_wrapper');
-  let tocContent = tocWrapper.children[0];
-  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
-
-  function addTocNumber(elem, deep) {
-    if (!elem) {
-      return;
-    }
-    let prop = elem.__proto__;
-
-    if (prop === HTMLUListElement.prototype) {
-      for (let i = 0; i < elem.children.length; i++) {
-        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+  let sidebarMeta = document.querySelector('#sidebarMeta');
+  let scheme = 'gemini';
+  let sidebarWrapper = document.querySelector('.sidebar-wrapper');
+  if (sidebarMeta && (scheme === 'pisces' || scheme === 'gemini')) {
+    document.addEventListener('scroll', function(e) {
+      if (document.scrollingElement.scrollTop > parseInt(sidebarMeta.style.marginTop) + 10) {
+        sidebarWrapper.classList.add('home-sidebar-fixed')
+      } else {
+        sidebarWrapper.classList.remove('home-sidebar-fixed')
       }
-    } else if (prop === HTMLLIElement.prototype) {
-      // 保存li元素
-      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
-        lList.push(elem);
-      }
-      for (let i = 0; i < elem.children.length; i++) {
-        let cur = elem.children[i];
-        if (cur.__proto__ === HTMLAnchorElement.prototype) {
-          if (autoNumber) {
-            cur.text = deep + ' ' + cur.text;
-          }
-        } else if (cur.__proto__ === HTMLUListElement.prototype) {
-          addTocNumber(cur, deep);
-        }
-      }
-    }
-  }
-
-  function removeParentActiveClass() {
-    let parents = tocContent.querySelectorAll('.' + active)
-    parents.forEach(function (elem) {
-      elem.classList.remove(active);
     });
   }
-
-  function addActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.add(activeClass);
-    }
-  }
-
-  function removeActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.remove(activeClass);
-    }
-  }
-
-  function addActiveLiElemment(elem, parent) {
-    if (!elem || elem === parent) {
-      return;
-    } else {
-      if (elem.__proto__ === HTMLLIElement.prototype) {
-        elem.classList.add(active);
-      }
-      addActiveLiElemment(elem.parentElement, parent);
-    }
-  }
-
-  function showToc() {
-    if (tocWrapper) {
-      postBody = document.querySelector('#post_body');
-      for (let i = 0; i < postBody.children.length; i++) {
-        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
-          hList.push(postBody.children[i]);
-        }
-      }
-      if (tocWrapper.classList.contains('compress')) {
-        tocContent.classList.add('closed');
-      } else if (tocWrapper.classList.contains('no_compress')) {
-        tocContent.classList.add('expanded');
-      } else {
-        if (hList.length > 10) {
-          active = 'active-hidden'
-          tocContent.classList.add('closed');
-        } else {
-          tocContent.classList.add('expanded');
-        }
-      }
-    }
-  }
-
-  (function () {
-    // 处理不是从#一级标题开始目录
-    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
-      let con = tocContent.children[0].children[0];
-      tocContent.innerHTML = con.innerHTML;
-    }
-    let markdownItTOC = document.querySelector('.markdownIt-TOC');
-    let innerHeight = window.innerHeight;
-    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
-    addTocNumber(tocContent, '');
-  })();
-
-  document.addEventListener('scroll', function (e) {
-    if (lList.length <= 0) {
-      return;
-    }
-    let scrollTop = document.scrollingElement.scrollTop + 10;
-    let dir;
-
-    if (lastTop - scrollTop > 0) {
-      dir = 'up';
-    } else {
-      dir = 'down';
-    }
-
-    lastTop = scrollTop;
-    if (scrollTop <= 0) {
-      if (lastIndex >= 0 && lastIndex < hList.length) {
-        lList[lastIndex].classList.remove(activeClass);
-      }
-      return;
-    }
-
-    let current = 0, hasFind = false;
-    for (let i = 0; i < hList.length; i++) {
-      if (hList[i].offsetTop > scrollTop) {
-        current = i;
-        hasFind = true;
-        break;
-      }
-    }
-    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
-      current = hList.length - 1;
-    } else {
-      current--;
-    }
-    if (dir === 'down') {
-      if (current > lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex)
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    } else {
-      if (current < lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex);
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    }
-  });
-
-
-  window.addEventListener('load', function () {
-    showToc();
-    document.querySelector('#sidebar').style = 'display: block;';
-    tocWrapper.classList.add('toc-active');
-    setTimeout(function () {
-      if ("createEvent" in document) {
-        let evt = document.createEvent("HTMLEvents");
-        evt.initEvent("scroll", false, true);
-        document.dispatchEvent(evt);
-      }
-      else {
-        document.fireEvent("scroll");
-      }
-    }, 500)
-  })
-
-</script>
-            </div>
-          
-        
+  </script>
+        <div class="section-box tag-line box-shadow-wrapper">
+          <section class="section tags-section posts-expand bg-color">
+            <div class="padding-wrapper">
+  <div class="tag-timeline-box">
+    <div class="tag-timeline-wrapper">
+      <div class="tag-timeline-title">
+        <h2>
+          Code
+          <small>标签</small>
+        </h2>
       </div>
-    </div>
-  
-</div>
-<script>
-  const SIDEBAR_TITLE_ACTIVE = 'sidebar-title-active';
-  const SIDEBAR_BODY_ACTIVE = 'sidebar-body-active';
-  const SLIDE_UP_IN = 'slide-up-in';
-
-  let sidebar = document.querySelector('#sidebar'),
-  tocSideBar = document.querySelector('#tocSideBar'),
-  metaSideBar = document.querySelector('#metaSideBar'),
-  postToc = document.querySelector('#post_toc'),
-  postSiteMeta = document.querySelector('#post_side_meta'),
-  sidebarTitle = document.querySelector('.sidebar-title'),
-  sidebarBody = document.querySelector('#sidebar_body');
-
-  tocSideBar && tocSideBar.addEventListener('click', (e) => {
-    toggleSidebar(e);
-  });
-
-  metaSideBar && metaSideBar.addEventListener('click', (e) => {
-    toggleSidebar(e);
-  });
-
-  function toggleSidebar(e) {
-    let currentTitle = document.querySelector("."+SIDEBAR_TITLE_ACTIVE);
-    if (currentTitle == e.srcElement) {
-      return ;
-    }
-    let current, showElement, hideElement;
-    if (e.srcElement == metaSideBar) {
-      showElement = postSiteMeta;
-      hideElement = postToc;
-    } else if (e.srcElement == tocSideBar){
-      showElement = postToc;
-      hideElement = postSiteMeta;
-    }
-    currentTitle.classList.remove(SIDEBAR_TITLE_ACTIVE);
-    e.srcElement.classList.add(SIDEBAR_TITLE_ACTIVE);
-
-    window.Velocity(hideElement, 'stop');
-    window.Velocity(hideElement, 'transition.slideUpOut', {
-      display: 'none',
-      duration: 200,
-      complete: function () {
-        window.Velocity(showElement, 'transition.slideDownIn', {
-          duration: 200
-        });
-      }
-    })
-    hideElement.classList.remove(SIDEBAR_BODY_ACTIVE);
-    showElement.classList.add(SIDEBAR_BODY_ACTIVE);
-  }
-
-  postToc && postToc.addEventListener('transitionend', function() {
-    this.classList.remove(SLIDE_UP_IN);
-  });
-
-  if (sidebarBody) {
-    if (sidebarBody.classList.contains('pisces') || sidebarBody.classList.contains('gemini')) {
-      let hasFix = false;
-      let scrollEl = document.querySelector('.main-continer');
-      let limitTop = document.querySelector('#nav_ul').children.length * 42 + 162;
-      window.addEventListener('scroll', function(e) {
-        if (document.scrollingElement.scrollTop >= limitTop) {
-          if (!hasFix) {
-            sidebar.classList.add('sidebar-fixed');
-            hasFix = true;
-          }
-        } else {
-          if (hasFix) {
-            sidebar.classList.remove('sidebar-fixed');
-            hasFix = false;
-          }
-        }
-      });
-    }
-  }
-  
-</script>
-        <div class="section-box box-shadow-wrapper">
-          <div class="section bg-color post post-page">
-            <header class="post-header">
-  <h1 class="post-title">
-    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/qi-ze-ke-xi-fang-zi-you-zhu-yi-mei-ti-bi-er-bu-tan-de-ta-li-ban-xun-su-duo-hui-a-fu-han-de-zhen-zheng-yuan-yin/">
-      齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因
-    </a>
-  </h1>
-  <div class="post-meta">
-    
-    <span class="meta-item pc-show">
-      <i class="fa fa-calendar-o"></i>
-      <span>发布于</span>
-      <span>2021-08-20</span>
-      <span class="post-meta-divider pc-show">|</span>
-    </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show">分类于</span>
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/Lflh06EyJ/">
-        <span>Translate</span>
-      </a>、
       
       
       
-      <a href="https://icantnotfindaname.github.io/tag/rCoOTiWXZD/">
-        <span>Article</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/3iIo2bzrB/">
-        <span>Philosophy</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/GUvytsV4Fx/">
-        <span>Zizek</span>
+      <a href="https://icantnotfindaname.github.io/post/di-gui-yu-hui-su-yi-er-cha-shu-wei-li/">
+        <div class="motion-warpper">
+          <div class="tag-post-node">
+            <h1>
+              09-06
+              <small>递归与回溯：以二叉树为例</small>
+            </h1>
+          </div>
+        </div>
       </a>
       
       
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
-      <i class="fa fa-clock-o"></i>
-      <span>14分钟</span>
-    </span>
-    <span class="meta-item">
-      <span class="post-meta-divider">|</span>
-      <i class="fa fa-file-word-o"></i>
-      <span>3074<span class="pc-show">字数</span></span>
-    </span>
-    
-  </div>
-</header>
-            <div class="post-body next-md-body" id="post_body">
-              <p>齐泽克于2021年8月20日在 RT News 上发表了此篇文章，只能说，该来的终究会来。但基本只是老生常谈。</p>
-<!-- more -->
-<p>原文地址：https://www.rt.com/op-ed/532207-zizek-taliban-retake-afghanistan-reason/</p>
-<p>以下为本人翻译：</p>
-<p>塔利班的8万名士兵重新夺回了阿富汗，城市次第陷落，而披坚执锐的30万政府军却一触即溃，轻易投降。何以至此？</p>
-<p>西方媒体告诉我们，对此可以有几种解释。</p>
-<p>第一种是公然的种族主义歧视: 阿富汗人民思想不够健全，无力实现民主，只求宗教原教旨主义下的统治——这是个荒谬的主张。半个世纪前，阿富汗还是一个温和开明的国家，拥有一个强大的共产党（即阿富汗人民民主党，该党曾掌权数年），后方才成为宗教原教旨主义国家，这缘自苏联为避免其共产主义力量的崩溃而对阿富汗实行的入侵。</p>
-<p>另一种解释是威慑，塔利班逆我者亡的恐怖行径导致无人敢于反抗。</p>
-<p>还有一个解释是信仰。 塔利班只相信他们的行为是上帝的旨意，得上帝护佑，也注定会取得胜利，所以他们可以耐心蛰伏，待时而动，因为时间在他们这边。</p>
-<p>另一个更加复杂而现实的解释是，不绝的战争和腐败造成的混乱可能会让阿富汗人民相信，即使塔利班政权实施压迫和伊斯兰教法式的统治，也至少可以保障最基本的安全和秩序。</p>
-<p>然而，所有这些解释似乎都刻意回避了一个基本事实，这个事实对于自由主义的西方观点来说是创伤性的。这就是塔利班对个人生存的漠视，他们的战士们随时准备“殉教”，以战斗或自杀。塔利班作为原教旨主义者“真诚地相信”，如果他们作为殉道者死去，他们就能进入天堂。但是这种解释并不足够，因为它无法抓住知性洞察力意义上「belief in the sense of intellectual insight」的信仰（“我知道我会上天堂，这是一个事实”）与作为一种主观立场「belief as an engaged subjective position」的信仰之间的区别。</p>
-<p>换句话说，<strong>它没有考虑到意识形态的实质力量——在此地是信仰的力量——这不单是信念的力量，而是一种生存论角度上的信仰：我们不作为选择信仰的主体，我们便是信仰，我们的生活浸润在信仰之中。</strong></p>
-<p>正是如此，法国哲学家福柯才对1978年的伊斯兰革命情有独钟，这让他两度到访伊朗。让他着迷的不仅仅是乐于接受牺牲和对失去自己的生命漠不关心的立场; 他致力于细致入微地讲述“真相的历史”，强调激进党派与其激烈的真理讲述形式，以斗争和磨难来进行变革，而非现代西方权力那种调和、中立和正常化的形式。理解这种形式的关键在于，历史政治话语中的真理概念本就是一种局部的真理概念，是为党派保留的。</p>
-<p>或者，正如福柯所述：</p>
-<blockquote>
-<p>如果这个主体谈论权利（或者母宁说他们的权利），谈论真理，那么这个真理就不再是哲学上的普遍真理。事实上，这个关于普遍战争的话语，试图从和平的下面分辨出战争的话语，就是要思实地讲述整体的战斗并构筑起战争的通史。但是，它并不就是全体性的或中性的话语；它永远是有视角的话语。仅仅在从它自己的角度出发透视全体性时，才涉及它。也就是说，真理仅仅只能从战斗的阵地出发，从争取胜利出发，可以说是在说话的主体得以幸存的范围内，才能得以展开。—— 《必须保卫社会》钱翰译</p>
-</blockquote>
-<p>这样一种侵入式的话语能否被视为尚未进入现代个人主义的前现代“原始”社会的标志而被摒弃呢？或者，今日它的复兴是否会被视为法西斯主义回归的标志？</p>
-<p>对任何对西方马克思主义有所了解的人而言，答案是显而易见的: 匈牙利哲学家卢卡奇向我们展示了马克思主义是如何“普遍真实”的，不是因为它的不偏不倚，而正是因为它是“片面的”，只能从一个特定的主观立场来理解。我们可能同意或不同意这种观点，但事实是，福柯在遥远的伊朗所寻找的——竞争性的（“战争”）真相说明形式——已经在马克思主义的观点中有力地呈现出来，即，<strong>陷入阶级斗争不是对历史的“客观”知识的障碍，而是它的条件。</strong></p>
-<p>通常意义上的实证主义知识，是对现实的一种“客观”（非片面）的方法，它不会被特定的主体参与所扭曲——而福柯所说的“现代西方权力的和谐化、中立化和正常化的形式”——是最纯粹的意识形态——也即“意识形态的终结”。</p>
-<p>一方面，我们有非意识形态的“客观”的专家知识；而另一方面，我们分割了个体，使得每个人都专注于自己特有的“自我技术”(福柯放弃伊朗经历时使用的术语) ，沉溺于某些小事给他/她的生活带来的乐趣。</p>
-<p>从自由个人主义的主流观点来看，一种普遍的承诺（译者注：我想作者的意思是一种宏观叙事），尤其包括对生命的风险的承诺，都是可疑的、“非理性的”。</p>
-<p>在这里，我们遇到了一个有趣的悖论: 虽然传统的马克思主义能否令人信服地解释塔利班的成功奥秘是值得怀疑的，但它提供了福柯在伊朗寻找的东西（以及现在阿富汗令我们着迷的东西）的一个完美的欧洲范例，这个范例并不涉及任何宗教原教旨主义，只是为了更好的生活而进行的一种集体介入。在全球资本主义取得成功之后，这种集体参与的精神就受到了压制，而现在这种压制的立场似乎又在宗教原教旨主义的幌子下回归。</p>
-<p>我们能否想象这种精神以一种更适当的，更有解放性的形式回归？当然。不仅可以想象，它已挟巨力敲响了我们的大门。</p>
-<p>现在我们来讨论全球变暖这个灾难——它需要大规模的集体行动，需要所有人以某种程度上的殉难形式，牺牲许多我们早已习以为常的享乐。如果我们真的想彻底改变我们的生活方式，那么个人主义这种“自我关心”以获得特定快乐的方式就必须被替代。单靠专家式的科学是无法完成这项任务的——它必须是一门植根于最深刻的集体参与的社会科学。而这个，才是塔利班问题的答案。</p>
-<p>( 全文完 )</p>
-<h2 id="英文原版">英文原版</h2>
-<p>The Taliban’s 80,000 troops have retaken Afghanistan with cities falling like dominos while the 300,000-strong government forces, better equipped and trained, mostly melted and surrendered with no will to fight. Why did it happen?</p>
-<p>The Western media tell us there can be several explanations for that. The first one is blatantly racist: the Afghan people there are simply not mature enough for democracy, they long for religious fundamentalism – a ridiculous claim if there ever was one. Half a century ago, Afghanistan was a (moderately) enlightened country with a strong Communist Party known as the People’s Democratic Party of Afghanistan, which even managed to take power for some years. Afghanistan became religiously fundamentalist only later, as a reaction to the Soviet occupation which aimed to prevent the collapse of communist power.</p>
-<p>Another explanation the media gives us is terror, as the Taliban ruthlessly executes those who oppose its politics.</p>
-<p>A further one is faith: the Taliban simply believe their acts fulfill the task imposed on them by God and their victory is guaranteed. So, they can afford to be patient because time is on their side.</p>
-<p>A more complex and realistic explanation as to why the Taliban managed to retake the country so promptly is chaos caused by the ongoing war and corruption. That could have caused a belief that even if the Taliban regime would bring oppression and impose Sharia Law, it would at least guarantee some safety and order.</p>
-<p>However, all these explanations seem to avoid a basic fact that is traumatic for the liberal Western view. That is the Taliban’s disregard for survival and the readiness of its fighters to assume “martyrdom,” to die not just in a battle but even in suicidal acts. The explanation that Taliban as fundamentalists “really believe” that they will enter paradise if they die as martyrs is not enough as it fails to capture the difference between belief in the sense of intellectual insight (“I know I will go to heaven, it’s a fact”) and belief as an engaged subjective position.</p>
-<p>In other words, it fails to take into account the material power of an ideology – in this case, the power of faith – which is not simply grounded in the strength of our conviction but in how we are existentially committed to our belief: we are not subjects choosing this or that belief, but we “are” our belief in the sense of this belief impregnating our life.</p>
-<p>It was due to this feature that French philosopher Michel Foucault was so fascinated by the 1978 Islamic Revolution that he twice visited Iran. What fascinated him there was not just the stance of accepting martyrdom and indifference with regard to losing one’s own life; he was “engaged in a very specific telling of the ‘history of truth’, emphasizing a partisan and agonistic form of truth-telling, and transformation through struggle and ordeal, as opposed to the pacifying, neutralizing, and normalizing forms of modern Western power. Crucial for understanding this point is the conception of truth at work in historico-political discourse, a conception of truth as partial, as reserved for partisans.”</p>
-<p>Or, as Foucault himself put it:</p>
-<p>“If this subject who speaks of right (or rather, rights) is speaking the truth, that truth is no longer the universal truth of the philosopher. It is true that this discourse about the general war, this discourse that tries to interpret the war beneath peace, is indeed an attempt to describe the battle as a whole and to reconstruct the general course of the war. But that does not make it a totalizing or neutral discourse; it is always a perspectival discourse. It is interested in the totality only to the extent that it can see it in one-sided terms, distort it and see it from its own point of view. The truth is, in other words, a truth that can be deployed only from its combat position, from the perspective of the sought for victory and ultimately, so to speak, of the survival of the speaking subject himself.”</p>
-<p>Can such an engaged discourse be dismissed as a sign of premodern “primitive” society which didn’t yet enter modern individualism? And is its revival today to be dismissed as a sign of fascist regression?</p>
-<p>To anyone minimally acquainted with Western Marxism, the answer is clear: Hungarian philosopher Georg Lukacs demonstrated how Marxism is “universally true” not in spite of its partiality but because it is “partial,” accessible only from a particular subjective position. We may agree or disagree with this view, but the fact is that what Foucault was looking for in far-away Iran – the agonistic (“war”) form of truth-telling – was already forcefully present in the Marxist view that being caught in the class struggle is not an obstacle to “objective” knowledge of history but its condition.</p>
-<p>The usual positivist notion of knowledge as an “objective” (non-partial) approach to reality which is not distorted by a particular subjective engagement – what Foucault characterized as “the pacifying, neutralizing, and normalizing forms of modern Western power” – is ideology at its purest – the ideology of the “end of ideology.”</p>
-<p>On the one hand, we have non-ideological “objective” expert-knowledge. On the other hand, we have dispersed individuals, each of whom is focused on his/her idiosyncratic “care of the self” (the term Foucault used when he abandoned his Iranian experience), small things that bring pleasure to his/her life.</p>
-<p>From this standpoint of liberal individualism, and universal commitment, especially if it includes risk of life, is suspicious and “irrational”…</p>
-<p>Here we encounter an interesting paradox: while it is doubtful that traditional Marxism can provide a convincing account of the success of Taliban, it provided a perfect European example of what Foucault was looking for in Iran (and of what fascinates us now in Afghanistan), an example which did not involve any religious fundamentalism but just a collective engagement for a better life. After the triumph of global capitalism, this spirit of collective engagement was repressed, and now this repressed stance seems to return in the guise of religious fundamentalism.</p>
-<p>Can we imagine a return of the repressed in its proper form of collective emancipatory engagement? Indeed. Not only can we imagine it, it is already knocking on our doors with great force.</p>
-<p>Let’s just mention the global warming catastrophe – it calls for large-scale collective actions which will demand their own forms of martyrdom, sacrificing many pleasures we have got used to. If we really want to change our entire way of life, the individualist “care of the self” which focuses on our use of pleasures will have to be superseded. Expert science alone will not do the job – it will have to be a science rooted in the deepest collective engagement. THIS should be our answer to the Taliban.</p>
-<p>( End )</p>
-
-            </div>
-            <div class="post-footer">
-  <ul class="post-copyright">
-    <li class="post-copyright-author">
-      <strong>本文作者：</strong>
-      Louis
-    </li>
-    <li class="post-copyright-link">
-      <strong>本文链接：</strong>
-      <a href="https://icantnotfindaname.github.io/post/qi-ze-ke-xi-fang-zi-you-zhu-yi-mei-ti-bi-er-bu-tan-de-ta-li-ban-xun-su-duo-hui-a-fu-han-de-zhen-zheng-yuan-yin/" title="齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因">https://icantnotfindaname.github.io/post/qi-ze-ke-xi-fang-zi-you-zhu-yi-mei-ti-bi-er-bu-tan-de-ta-li-ban-xun-su-duo-hui-a-fu-han-de-zhen-zheng-yuan-yin/</a>
-    </li>
-    <li class="post-copyright-license">
-      <strong>版权声明： </strong>
-      本博客所有文章除特别声明外，均采用<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i> BY-NC-SA</a> 许可协议。转载请注明出处！
-    </li>
-  </ul>
-  <div class="tags">
-    
-      <a href="https://icantnotfindaname.github.io/tag/Lflh06EyJ/"># Translate</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/rCoOTiWXZD/"># Article</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/3iIo2bzrB/"># Philosophy</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/GUvytsV4Fx/"># Zizek</a>
-    
-  </div>
-  <div class="nav">
-    <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="关于福柯" href="https://icantnotfindaname.github.io/post/guan-yu-fu-ke/">关于福柯</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="关于福柯" href="https://icantnotfindaname.github.io/post/guan-yu-fu-ke/">上一篇</a>
       
-    </div>
-    <div class="nav-next">
       
-        <a class="nav-pc-next" title="齐泽克：分析哲学 vs 欧陆哲学" href="https://icantnotfindaname.github.io/post/qi-ze-ke-fen-xi-zhe-xue-vs-ou-lu-zhe-xue/">齐泽克：分析哲学 vs 欧陆哲学</a>
-        <a class="nav-mobile-next" title="齐泽克：分析哲学 vs 欧陆哲学" href="https://icantnotfindaname.github.io/post/qi-ze-ke-fen-xi-zhe-xue-vs-ou-lu-zhe-xue/">下一篇</a>
-        <i class="fa fa-chevron-right"></i>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
       
     </div>
   </div>
 </div>
-            
-  
-
-          </div>
+          </section>
         </div>
       </div>
     </div>
@@ -827,36 +517,6 @@
   // 代码高亮
   hljs.initHighlightingOnLoad();
 
-</script>
-    <div class="light-box" id="light_box"></div>
-<script>
-  let imgs = document.querySelectorAll('.post-body img');
-  let lightBox = document.querySelector('#light_box');
-  lightBox.addEventListener('mousedown', (e) => {
-    e.preventDefault()
-  })
-  lightBox.addEventListener('mousewheel', (e) => {
-    e.preventDefault()
-  })
-  let width = window.innerWidth * 0.8;
-  lightBox.onclick = () => {
-    let img = lightBox.querySelector('img');
-    lightBox.style = '';
-    img && img.remove();
-  }
-  imgs.forEach(item => {
-    item.onclick = function (e) {
-      let lightImg = document.createElement('img');
-      lightImg.src = this.src;
-      lightBox.style = `height: 100%; opacity: 1; background-color: rgba(0, 0, 0, 0.5);cursor: zoom-out;`;
-      lightImg.style = `width: ${width}px; border: 1px solid #fff; border-radius: 2px;`;
-      lightImg.onclick = function () {
-        lightBox.style = '';
-        this.remove();
-      }
-      lightBox.append(lightImg);
-    }
-  })
 </script>
   </div>
 </body>
@@ -1529,6 +1189,7 @@ pm2 start
 </script> -->
 
 <script src="/media/js/mouse/love.js"></script>
+
 
 
 </html>
