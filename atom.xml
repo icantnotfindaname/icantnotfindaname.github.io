@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-06T09:50:41.469Z</updated>
+    <updated>2021-09-06T09:53:12.831Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -21,15 +21,7 @@
         <content type="html"><![CDATA[<p>学了三年，还在写这种内容，唉…… 但不得不说，这是一个十分重要的基础问题。</p>
 <!-- more -->
 <p>这其实是力扣上的一道题：给定一个二叉树，找出其最大深度。</p>
-<p>示例：</p>
-<p>给定二叉树 [3,9,20,null,null,15,7]，</p>
-<pre><code>3
-</code></pre>
-<p>/ <br>
-9  20<br>
-/  <br>
-15   7</p>
-<p>返回它的最大深度 3 。</p>
+<p>地址：https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/</p>
 <h2 id="递归">递归</h2>
 <p>递归有三个标准动作：</p>
 <ol>
@@ -115,7 +107,11 @@ int maxDepth(TreeNode* root) {
         <link href="https://icantnotfindaname.github.io/post/bu-ma-qian-xi/">
         </link>
         <updated>2021-09-05T08:02:28.000Z</updated>
-        <content type="html"><![CDATA[<p>补码的定义：给出长度为 n 的数值 y，则 y 的以基数 b 的补码为：b^n - y （即 b 的补码）</p>
+        <summary type="html"><![CDATA[<p>定点数的运算忘的差不多了，赶紧重新捡捡。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>定点数的运算忘的差不多了，赶紧重新捡捡。</p>
+<!-- more -->
+<p>补码的定义：给出长度为 n 的数值 y，则 y 的以基数 b 的补码为：b^n - y （即 b 的补码）</p>
 <p>说补码首先就得说反码，因为反码是补码的一个过渡，二者的目的都在于改进计算机加减法运算的性能。当没有反码和补码的时候，减法虽然也可以转变成加法去进行运算，但是问题在于，比如，当你计算 1 - 1 的时候，用源码去计算的时候，就会变成 1 + -1 也就是 0001 + 1001，显然算出来根本不是 0。而且还有另外一个问题是用原码表示数字中有一个 +0 和一个 -0，这显然是毫无意义的。于是为了解决第一个问题，人们发明了反码。</p>
 <p>反码：正数的反码和原码一样，负数的反码是符号位不变其它位取反。这样就解决了上面的第一个问题，上面的二进制加法用算出来就是  0001 + 1110 = 1111 正好是 -0 的反码，这样就得到了一个正确的结果。但第二个问题依然没有解决。</p>
 <p>于是补码来了，这才是最终的解决形态，解决了上述的第二个问题。补码在二进制中就是反码加一，于是可以看到上述 -0 的反码加一之后变成了 10000，丢弃掉溢出的位之后就变成了 0000，刚好是 +0，完美解决。同时，由于只有一种 0 的表示方式，所以补码可以多表示一个负数。</p>
