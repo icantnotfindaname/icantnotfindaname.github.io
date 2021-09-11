@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-06T09:53:12.831Z</updated>
+    <updated>2021-09-11T08:21:39.891Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -10,6 +10,117 @@
     <logo>https://icantnotfindaname.github.io/images/avatar.png</logo>
     <icon>https://icantnotfindaname.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Louispace</rights>
+    <entry>
+        <title type="html"><![CDATA[构造二叉树]]></title>
+        <id>https://icantnotfindaname.github.io/post/gou-zao-er-cha-shu/</id>
+        <link href="https://icantnotfindaname.github.io/post/gou-zao-er-cha-shu/">
+        </link>
+        <updated>2021-09-11T07:25:16.000Z</updated>
+        <content type="html"><![CDATA[<h2 id="从中序和后序遍历序列构造二叉树">从中序和后序遍历序列构造二叉树</h2>
+<p>不管是【中序 + 前序】还是【中序 + 后序】，其实思路都是一样的，大概分为以下几个步骤：</p>
+<ol>
+<li>通过后序（或者前序）序列找到树的根节点</li>
+<li>通过中序序列确定根节点的左右子树</li>
+<li>回过头来分割后序序列</li>
+<li>递归处理左右区间</li>
+</ol>
+<p>这里理所应当该采用递归的算法，所以还要考虑一下递归的三个步骤，并且在进行数组分割的时候要考虑清楚区间的的开闭，在以下的代码中我选择了左开右闭的实现方式。</p>
+<p>先给出伪代码：</p>
+<pre><code class="language-C++">// is = start index of inorder, ie = end index of inorder ...... 
+TreeNode* build(vector&lt;int&gt;&amp; inorder, int is, int ie, vector&lt;int&gt;&amp; postorder, int ps, int pe) {
+    // return addition - 1
+    if (pe == ps) return NULL;   // 因为是左闭右开，所以当 `pe == ps` 时数组中就已经没有任何节点了。
+
+    // return addition - 2
+    TreeNode* root = new TreeNode(postorder[pe - 1]);
+    if (ps == pe - 1) return root;
+
+    // find the dividing index
+    // todo
+
+    // divide inorder vector 
+    // todo
+    
+    // divide preorder vector 
+    // todo
+
+    // ls_i 表示 left-start-inorder 中序序列左子树的起始索引，其他的依此类推
+    root-&gt;left = build(inorder, ls_i, le_i, postorder, ls_p, le_p);
+    root-&gt;right = build(inorder, rs_i, re_i, postorder, rs_p, re_p);
+}
+</code></pre>
+<p>重点代码就在找到分割节点和分割两个数组这里了，代码如下：</p>
+<pre><code class="language-C++">    // find the dividing index 
+    int p;
+    for (int p = is, p &lt; ie; p++) 
+        if (inorder[p] == root-&gt;val)
+            break;
+
+    // divide inorder vector 
+    ls_i = is;
+    le_i = p;
+    rs_i = p + 1;
+    re_i = ie;
+
+    // divide postorder vector 
+    ls_p = ps;
+    le_p = ps + p - is;
+    rs_p = le_p;
+    re_p = pe - 1;
+</code></pre>
+<p>首先根据一个循环在中序序列中找到根节点的索引，然后索引左边就是左子树，右边就是右子树；接下来开始切割后序序列，记中序序列分割得到的左子树中有 n 个节点，那么后序序列中的前 n 个节点就是左子树，剩下的节点就在右子树中。</p>
+<p>这样整个递归函数就写完了，我们只需要在主函数中调用这个递归函数就可以了，代码如下：</p>
+<pre><code class="language-C++">TreeNode* buildTree(vector&lt;int&gt;&amp; inorder, vector&lt;int&gt;&amp; postorder) {
+    if (postorder.size() == 0 || inorder.size() == 0) return NULL;
+    return build(inorder, 0, inorder.size(), postorder, 0, postorder.size());
+}
+</code></pre>
+<h2 id="从中序和前序遍历序列构造二叉树">从中序和前序遍历序列构造二叉树</h2>
+<p>如上所述，整个过程与【中序 + 后序】并没有什么区别。代码如下：</p>
+<pre><code class="language-C++">TreeNode* build(vector&lt;int&gt;&amp; inorder, int is, int ie, vector&lt;int&gt;&amp; preorder, int ps, int pe) {
+    if (ps == pe) return NULL;
+
+    TreeNode* root = new TreeNode(preorder[ps]);
+    if (pe == ps + 1) return root;
+
+    int p;
+    for (p = is; p &lt; ie; p++) 
+        if (inorder[p] == root-&gt;val)
+            break;
+    
+    // divide inorder 
+    int ls_i = is;
+    int le_i = p;
+    int rs_i = p + 1;
+    int re_i = ie;
+
+    // divide preorder 
+    int ls_p = ps + 1;
+    int le_p = ps + 1 + p - is;
+    int rs_p = le_p;
+    int re_p = pe;
+
+    root-&gt;left = build(inorder, ls_i, le_i, preorder, ls_p, le_p);
+    root-&gt;right = build(inorder, rs_i, re_i, preorder, rs_p, re_p);
+
+    return root;
+}
+
+TreeNode* buildTree(vector&lt;int&gt;&amp; inorder, vector&lt;int&gt;&amp; preorder) {
+    if (inorder.size() == 0 || preorder.size() == 0) return NULL;
+    return build(inorder, 0, inorder.size(), preorder, 0, preorder.size());
+}
+</code></pre>
+<p>最后再注意一下以下几个点：</p>
+<ol>
+<li>区间的开闭</li>
+<li>不要忘了返回值</li>
+<li>注意递归的结束条件</li>
+<li>参数太多不要混淆</li>
+<li>没了</li>
+</ol>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[递归与回溯：以二叉树为例]]></title>
         <id>https://icantnotfindaname.github.io/post/di-gui-yu-hui-su-yi-er-cha-shu-wei-li/</id>
@@ -111,6 +222,7 @@ int maxDepth(TreeNode* root) {
 ]]></summary>
         <content type="html"><![CDATA[<p>定点数的运算忘的差不多了，赶紧重新捡捡。</p>
 <!-- more -->
+<h2 id="来源以及含义">来源以及含义</h2>
 <p>补码的定义：给出长度为 n 的数值 y，则 y 的以基数 b 的补码为：b^n - y （即 b 的补码）</p>
 <p>说补码首先就得说反码，因为反码是补码的一个过渡，二者的目的都在于改进计算机加减法运算的性能。当没有反码和补码的时候，减法虽然也可以转变成加法去进行运算，但是问题在于，比如，当你计算 1 - 1 的时候，用源码去计算的时候，就会变成 1 + -1 也就是 0001 + 1001，显然算出来根本不是 0。而且还有另外一个问题是用原码表示数字中有一个 +0 和一个 -0，这显然是毫无意义的。于是为了解决第一个问题，人们发明了反码。</p>
 <p>反码：正数的反码和原码一样，负数的反码是符号位不变其它位取反。这样就解决了上面的第一个问题，上面的二进制加法用算出来就是  0001 + 1110 = 1111 正好是 -0 的反码，这样就得到了一个正确的结果。但第二个问题依然没有解决。</p>
@@ -118,6 +230,21 @@ int maxDepth(TreeNode* root) {
 <p>另外，再从更宏观的计算考虑，也就是考虑开头的补码定义，在十进制中，55 - 50 在长度为 3 的情况下就可以写成 45 + 50 = 95 (这里丢弃掉了最高位) 补码刚好 5，得到了正确结果。那么这一切的原理是什么呢？</p>
 <p>假设 x ＞ y，则 x - y = b^n - x + b^n + y = b^n - x + y 原码刚好就是 x - y 顺利回来了。</p>
 <p>手推，但是我想这应该就是原理了吧。</p>
+<h2 id="原码与补码之间的转换">原码与补码之间的转换</h2>
+<p>整数的原码、反码、补码全部都是一样的，所以下面求补码的方法全部针对负数。</p>
+<ol>
+<li>使用定义求解</li>
+<li>符号位不变，其他位取反后加1</li>
+<li>符号位不变，最右边的1及其左边的数不变，其他位取反</li>
+</ol>
+<p>比如：</p>
+<pre><code>原码：1000000
+补码：1111111 + 1 = 10000000 溢出之后截断之后就变成
+
+原码：1001100
+补码：1110011 + 1 = 1110100
+也可以直接用第三种方法：1 拼接 110 拼接 100 -&gt; 1110100
+</code></pre>
 ]]></content>
     </entry>
     <entry>
@@ -441,39 +568,6 @@ ln -s /var/snap/nextcloud/common/nextcloud/data/louis/files /root/nextcloud
 // 在最后一行添加
 'filesystem_check_changes' =&gt; true,
 </code></pre>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Net-Speeder 加速]]></title>
-        <id>https://icantnotfindaname.github.io/post/net-speeder-jia-su/</id>
-        <link href="https://icantnotfindaname.github.io/post/net-speeder-jia-su/">
-        </link>
-        <updated>2021-08-07T02:38:09.000Z</updated>
-        <summary type="html"><![CDATA[<p>注：开启了net-speeder的服务器上对外ping时看到的是4倍，实际网络上是2倍流量。另外两倍是内部dup出来的，不占用带宽。 另外，内部dup包并非是偷懒未判断，是为了更快触发快速重传的。同时，net-speeder不依赖ttl的大小，ttl的大小跟流量无比例关系。不存在windows的ttl大，发包就多的情况。</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>注：开启了net-speeder的服务器上对外ping时看到的是4倍，实际网络上是2倍流量。另外两倍是内部dup出来的，不占用带宽。 另外，内部dup包并非是偷懒未判断，是为了更快触发快速重传的。同时，net-speeder不依赖ttl的大小，ttl的大小跟流量无比例关系。不存在windows的ttl大，发包就多的情况。</p>
-<!-- more -->
-<h2 id="1-prepare">1. Prepare</h2>
-<pre><code class="language-json">yum -y install gcc  // install gcc
-gcc --version  // check 
-yum install libnet libpcap libnet-devel libpcap-devel
-</code></pre>
-<h2 id="2-install">2. Install</h2>
-<pre><code class="language-json">wget https://github.com/snooda/net-speeder/archive/master.zip
-unzip master.zip
-rm -rf master.zip
-cd net-speeder-master/ 
-sh build.sh
-</code></pre>
-<h2 id="3-usage">3. Usage</h2>
-<pre><code class="language-json">// 给所有的ip协议加速
-nohup /usr/local/net_speeder/net_speeder eth0 &quot;ip&quot; &gt;/dev/null 2&gt;&amp;1 &amp;
-</code></pre>
-<h2 id="4-result">4. Result</h2>
-<p>下行速度翻了个倍，但是上行速度没有显著提升，甚至有所下降。</p>
-<hr>
-<h3 id="20210807-update">2021.08.07 Update</h3>
-<p>晚高峰时速度大致提升20%，但这种技术终归是损人利己，还是关了罢。</p>
 ]]></content>
     </entry>
 </feed>
