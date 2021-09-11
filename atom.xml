@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-11T08:21:39.891Z</updated>
+    <updated>2021-09-11T08:23:51.458Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -16,7 +16,11 @@
         <link href="https://icantnotfindaname.github.io/post/gou-zao-er-cha-shu/">
         </link>
         <updated>2021-09-11T07:25:16.000Z</updated>
-        <content type="html"><![CDATA[<h2 id="从中序和后序遍历序列构造二叉树">从中序和后序遍历序列构造二叉树</h2>
+        <summary type="html"><![CDATA[<p>这也是比较难的一个算法点，难点主要在于步骤有些繁复，且递归条件和区间开闭容易遗漏或者搞错。可以在力扣找到对应的题目。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>这也是比较难的一个算法点，难点主要在于步骤有些繁复，且递归条件和区间开闭容易遗漏或者搞错。可以在力扣找到对应的题目。</p>
+<!-- more -->
+<h2 id="从中序和后序遍历序列构造二叉树">从中序和后序遍历序列构造二叉树</h2>
 <p>不管是【中序 + 前序】还是【中序 + 后序】，其实思路都是一样的，大概分为以下几个步骤：</p>
 <ol>
 <li>通过后序（或者前序）序列找到树的根节点</li>
