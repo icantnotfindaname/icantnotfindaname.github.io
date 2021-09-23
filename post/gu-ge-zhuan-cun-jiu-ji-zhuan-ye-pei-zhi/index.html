@@ -8,7 +8,7 @@
 <meta name="keywords" content="Louispace">
 <meta name="description" content="想做你的对手">
 <meta name="theme-color" content="#000">
-<title>nextcloud 安装笔记 | Louispace</title>
+<title>VPS 究极专业配置网盘篇（网盘+转存） | Louispace</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1632420167473">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/gemini.css">
@@ -29,8 +29,8 @@
 
 
 
-  <meta name="description" content="nextcloud 安装笔记" />
-  <meta name="keywords" content="CloudDrive,VPS,Linux" />
+  <meta name="description" content="VPS 究极专业配置网盘篇（网盘+转存）" />
+  <meta name="keywords" content="CloudDrive,VPS,Skill,Linux" />
 </head>
 
 <body>
@@ -174,7 +174,8 @@
       <div class="sidebar-body gemini" id="sidebar_body">
         
           
-            
+            <div class="post-side-meta" id="post_side_meta">
+              
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -225,6 +226,201 @@
 
 
 </div>
+            </div>
+            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
+              <div class="toc-box right-motion">
+  <div class="toc-wrapper auto-number auto"
+    id="toc_wrapper">
+    <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#%E5%88%9D%E5%A7%8B%E5%8C%96-vps">初始化 VPS</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AE-cloudreve">安装并配置 cloudreve *</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AE-aria2">安装并配置 Aria2</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AE-rclone">安装并配置 Rclone</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AE-autorclone">安装并配置 AutoRclone</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85-gclone">安装 Gclone</a></li>
+<li><a href="#%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AE-gd-util">安装并配置 gd-util</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+</div>
+
+<script>
+
+  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
+  let active = 'active-show', activeClass = 'active-current';
+  let tocWrapper = document.querySelector('#toc_wrapper');
+  let tocContent = tocWrapper.children[0];
+  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
+
+  function addTocNumber(elem, deep) {
+    if (!elem) {
+      return;
+    }
+    let prop = elem.__proto__;
+
+    if (prop === HTMLUListElement.prototype) {
+      for (let i = 0; i < elem.children.length; i++) {
+        addTocNumber(elem.children[i], deep + (i + 1) + '.');
+      }
+    } else if (prop === HTMLLIElement.prototype) {
+      // 保存li元素
+      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
+        lList.push(elem);
+      }
+      for (let i = 0; i < elem.children.length; i++) {
+        let cur = elem.children[i];
+        if (cur.__proto__ === HTMLAnchorElement.prototype) {
+          if (autoNumber) {
+            cur.text = deep + ' ' + cur.text;
+          }
+        } else if (cur.__proto__ === HTMLUListElement.prototype) {
+          addTocNumber(cur, deep);
+        }
+      }
+    }
+  }
+
+  function removeParentActiveClass() {
+    let parents = tocContent.querySelectorAll('.' + active)
+    parents.forEach(function (elem) {
+      elem.classList.remove(active);
+    });
+  }
+
+  function addActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.add(activeClass);
+    }
+  }
+
+  function removeActiveClass(index) {
+    if (index >= 0 && index < hList.length) {
+      lList[index].classList.remove(activeClass);
+    }
+  }
+
+  function addActiveLiElemment(elem, parent) {
+    if (!elem || elem === parent) {
+      return;
+    } else {
+      if (elem.__proto__ === HTMLLIElement.prototype) {
+        elem.classList.add(active);
+      }
+      addActiveLiElemment(elem.parentElement, parent);
+    }
+  }
+
+  function showToc() {
+    if (tocWrapper) {
+      postBody = document.querySelector('#post_body');
+      for (let i = 0; i < postBody.children.length; i++) {
+        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
+          hList.push(postBody.children[i]);
+        }
+      }
+      if (tocWrapper.classList.contains('compress')) {
+        tocContent.classList.add('closed');
+      } else if (tocWrapper.classList.contains('no_compress')) {
+        tocContent.classList.add('expanded');
+      } else {
+        if (hList.length > 10) {
+          active = 'active-hidden'
+          tocContent.classList.add('closed');
+        } else {
+          tocContent.classList.add('expanded');
+        }
+      }
+    }
+  }
+
+  (function () {
+    // 处理不是从#一级标题开始目录
+    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
+      let con = tocContent.children[0].children[0];
+      tocContent.innerHTML = con.innerHTML;
+    }
+    let markdownItTOC = document.querySelector('.markdownIt-TOC');
+    let innerHeight = window.innerHeight;
+    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
+    addTocNumber(tocContent, '');
+  })();
+
+  document.addEventListener('scroll', function (e) {
+    if (lList.length <= 0) {
+      return;
+    }
+    let scrollTop = document.scrollingElement.scrollTop + 10;
+    let dir;
+
+    if (lastTop - scrollTop > 0) {
+      dir = 'up';
+    } else {
+      dir = 'down';
+    }
+
+    lastTop = scrollTop;
+    if (scrollTop <= 0) {
+      if (lastIndex >= 0 && lastIndex < hList.length) {
+        lList[lastIndex].classList.remove(activeClass);
+      }
+      return;
+    }
+
+    let current = 0, hasFind = false;
+    for (let i = 0; i < hList.length; i++) {
+      if (hList[i].offsetTop > scrollTop) {
+        current = i;
+        hasFind = true;
+        break;
+      }
+    }
+    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
+      current = hList.length - 1;
+    } else {
+      current--;
+    }
+    if (dir === 'down') {
+      if (current > lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex)
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    } else {
+      if (current < lastIndex) {
+        addActiveClass(current);
+        removeActiveClass(lastIndex);
+        lastIndex = current;
+        removeParentActiveClass();
+        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
+      }
+    }
+  });
+
+
+  window.addEventListener('load', function () {
+    showToc();
+    document.querySelector('#sidebar').style = 'display: block;';
+    tocWrapper.classList.add('toc-active');
+    setTimeout(function () {
+      if ("createEvent" in document) {
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("scroll", false, true);
+        document.dispatchEvent(evt);
+      }
+      else {
+        document.fireEvent("scroll");
+      }
+    }, 500)
+  })
+
+</script>
+            </div>
           
         
       </div>
@@ -312,8 +508,8 @@
           <div class="section bg-color post post-page">
             <header class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/">
-      nextcloud 安装笔记
+    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/gu-ge-zhuan-cun-jiu-ji-zhuan-ye-pei-zhi/">
+      VPS 究极专业配置网盘篇（网盘+转存）
     </a>
   </h1>
   <div class="post-meta">
@@ -321,7 +517,7 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span>发布于</span>
-      <span>2021-08-18</span>
+      <span>2021-09-23</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
@@ -342,6 +538,12 @@
       
       
       
+      <a href="https://icantnotfindaname.github.io/tag/Hbe3VERgqS/">
+        <span>Skill</span>
+      </a>、
+      
+      
+      
       <a href="https://icantnotfindaname.github.io/tag/HbiuaTuLgI/">
         <span>Linux</span>
       </a>
@@ -352,50 +554,371 @@
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>2分钟</span>
+      <span>15分钟</span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>357<span class="pc-show">字数</span></span>
+      <span>3217<span class="pc-show">字数</span></span>
     </span>
     
   </div>
 </header>
             <div class="post-body next-md-body" id="post_body">
-              <p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件......</p>
+              <p>写在前面：以前浸淫在 BT 和 PT 一段时间，后面又兼修了 GD 转存，适逢今日入手一台大盘鸡，决定重新配置一下，顺便写篇文章留作纪念。兜兜转转之后颇有一些感悟：PT 太累人，BT 可分忧，白嫖一时爽，莫做松鼠党。另：不要只是闷头转存别人的资源，也多多贡献一下自己的力量，至少可以帮忙分流。</p>
 <!-- more -->
-<p>Snap 是一个类似容器的东西，支持 CentOS7.6+，其他系统可以到 snap 的官网进行查看。</p>
-<p><a href="https://snapcraft.io/install/nextcloud/centos">Install Nextcloud on CentOS using the Snap Store | Snapcraft</a></p>
-<p>下载命令如下：</p>
-<pre><code class="language-bash">sudo yum install epel-release
-sudo yum install snapd
-sudo systemctl enable --now snapd.socket
-sudo ln -s /var/lib/snapd/snap /snap
-sudo snap install nextcloud
+<p>整体框架：cloudreve 是一个网盘，我用来作 webdav 的，也可以将存储资源可视化，有的时候也用来做离线下载。rclone 是 GD 转存的一切基础，autoclone 基于 rclone 增加了有关 SA 的操作，用来突破每日 750g 的限制，gclone 在 autoclone 的基础上增加了对 SA 的优化操作，但是底层还是 rclone。gd-util 提供了对 tg bot 的支持，日常转存更加简单，而且还可以更加高效地使用 SA。</p>
+<h2 id="初始化-vps">初始化 VPS</h2>
+<pre><code>yum update
+yum install -y curl wget 2&gt; /dev/null || apt install -y curl wget
+wget -O jcnfbox.sh https://raw.githubusercontent.com/Netflixxp/jcnf-box/main/jcnfbox.sh &amp;&amp; chmod +x jcnfbox.sh &amp;&amp; clear &amp;&amp; ./jcnfbox.sh
 
-// 以上已经下载完成
-// 换端口
-snap set nextcloud ports.http=60000
+// 选择7测试一下流媒体解锁 选择14安装bbr加速 选择1进行综合测试
 
-// https 配置SSL
-nextcloud.enable-https lets-encrypt
-
-// 创建软连接
-ln -s /var/snap/nextcloud/common/nextcloud/data/louis/files /root/nextcloud
+yum -y install epel-release
+yum -y install unzip zip screen fuse fuse-devel git  // 这里安装一些常用的工具
 </code></pre>
-<p>一些其他的命令可以查看官方 Github，可以解决 80% 的问题：</p>
-<p><a href="https://github.com/nextcloud/nextcloud-snap">GitHub - nextcloud/nextcloud-snap: ☁️📦 Nextcloud packaged as a snap</a></p>
-<p>或者官方文档：</p>
-<p><a href="https://docs.nextcloud.com/server/latest/admin_manual/installation/#installation">Installation and server configuration - Nextcloud latest Administration Manual latest documentation</a></p>
-<hr>
-<p>2021.08.23 Update<br>
-如果在服务器直接上传文件到 nextcloud 的 data 目录下，则需要手动扫描才可以在 web 上看到更新内容，推荐方法如下：</p>
-<pre><code class="language-bash">vi /var/snap/nextcloud/28417/nextcloud/config/config.php  // 配置文件路径请自行确定
-
-// 在最后一行添加
-'filesystem_check_changes' =&gt; true,
+<h2 id="安装并配置-cloudreve">安装并配置 cloudreve *</h2>
+<pre><code>wget https://github.com/cloudreve/Cloudreve/releases/download/3.3.2/cloudreve_3.3.2_linux_amd64.tar.gz
+tar -zxvf cloudreve_3.3.2_linux_amd64.tar.gz
+rm -rf cloudreve_3.3.2_linux_amd64.tar.gz
+mkdir cloud
+mv cloudreve cloud/
+cd cloud/
+nohup ./cloudreve &amp;&gt; main.log &amp;  // 使用nohup让网盘后台运行，注意我这里没有设置开机启动
+firewall-cmd --zone=public --add-port=5212/tcp --permanent  // cloudreve默认使用5212端口，所以这里要开放一下
+firewall-cmd --reload
+cat main.log  // 查看cloudreve运行日志，第一次运行的时候会自动初始化账号密码
 </code></pre>
+<p>之后点击右上方头像，控制面板-&gt;用户组可以修改用户可供存储的最大容量。接下来安装 aria2 为 cloudreve 设置离线下载。</p>
+<h2 id="安装并配置-aria2">安装并配置 Aria2</h2>
+<pre><code>yum install ca-certificates
+wget -N git.io/aria2.sh &amp;&amp; chmod +x aria2.sh
+./aria2.sh  // 选择1开始安装，此一键脚本会自动开放对应端口，不用手动开放，之后记住RPC密钥，重新运行脚本选择12自动更新BT-tracker
+</code></pre>
+<p>登录 cloudreve，选择控制面板-&gt;参数设置-&gt;离线下载，填入相应的地址和密钥，临时目录选择脚本自动创建的 <code>/root/downloads/</code> 即可。最后点击最下面的测试链接，测试通过之后保存即可。</p>
+<h2 id="安装并配置-rclone">安装并配置 Rclone</h2>
+<p><a href="https://rclone.org/install/">官网</a>有各个系统的安装示例，照着来就行。</p>
+<pre><code>curl https://rclone.org/install.sh | sudo bash
+rclone config  // 进入rclone设置
+</code></pre>
+<p>这里用私人 API 配置一个谷歌团队盘：</p>
+<pre><code>[root@servarica ~]# rclone config
+No remotes found - make a new one
+n) New remote
+s) Set configuration password
+q) Quit config
+n/s/q&gt; n
+name&gt; louisteam  // 这里自己取一个名字
+Type of storage to configure.
+Enter a string value. Press Enter for the default (&quot;&quot;).
+Choose a number from below, or type in your own value
+ 1 / 1Fichier
+   \ &quot;fichier&quot;
+ 2 / Alias for an existing remote
+   \ &quot;alias&quot;
+ 3 / Amazon Drive
+   \ &quot;amazon cloud drive&quot;
+ 4 / Amazon S3 Compliant Storage Providers including AWS, Alibaba, Ceph, Digital Ocean, Dreamhost, IBM COS, Minio, SeaweedFS, and Tencent COS
+   \ &quot;s3&quot;
+ 5 / Backblaze B2
+   \ &quot;b2&quot;
+ 6 / Box
+   \ &quot;box&quot;
+ 7 / Cache a remote
+   \ &quot;cache&quot;
+ 8 / Citrix Sharefile
+   \ &quot;sharefile&quot;
+ 9 / Compress a remote
+   \ &quot;compress&quot;
+10 / Dropbox
+   \ &quot;dropbox&quot;
+11 / Encrypt/Decrypt a remote
+   \ &quot;crypt&quot;
+12 / Enterprise File Fabric
+   \ &quot;filefabric&quot;
+13 / FTP Connection
+   \ &quot;ftp&quot;
+14 / Google Cloud Storage (this is not Google Drive)
+   \ &quot;google cloud storage&quot;
+15 / Google Drive
+   \ &quot;drive&quot;
+16 / Google Photos
+   \ &quot;google photos&quot;
+17 / Hadoop distributed file system
+   \ &quot;hdfs&quot;
+18 / Hubic
+   \ &quot;hubic&quot;
+19 / In memory object storage system.
+   \ &quot;memory&quot;
+20 / Jottacloud
+   \ &quot;jottacloud&quot;
+21 / Koofr
+   \ &quot;koofr&quot;
+22 / Local Disk
+   \ &quot;local&quot;
+23 / Mail.ru Cloud
+   \ &quot;mailru&quot;
+24 / Mega
+   \ &quot;mega&quot;
+25 / Microsoft Azure Blob Storage
+   \ &quot;azureblob&quot;
+26 / Microsoft OneDrive
+   \ &quot;onedrive&quot;
+27 / OpenDrive
+   \ &quot;opendrive&quot;
+28 / OpenStack Swift (Rackspace Cloud Files, Memset Memstore, OVH)
+   \ &quot;swift&quot;
+29 / Pcloud
+   \ &quot;pcloud&quot;
+30 / Put.io
+   \ &quot;putio&quot;
+31 / QingCloud Object Storage
+   \ &quot;qingstor&quot;
+32 / SSH/SFTP Connection
+   \ &quot;sftp&quot;
+33 / Sugarsync
+   \ &quot;sugarsync&quot;
+34 / Tardigrade Decentralized Cloud Storage
+   \ &quot;tardigrade&quot;
+35 / Transparently chunk/split large files
+   \ &quot;chunker&quot;
+36 / Union merges the contents of several upstream fs
+   \ &quot;union&quot;
+37 / Uptobox
+   \ &quot;uptobox&quot;
+38 / Webdav
+   \ &quot;webdav&quot;
+39 / Yandex Disk
+   \ &quot;yandex&quot;
+40 / Zoho
+   \ &quot;zoho&quot;
+41 / http Connection
+   \ &quot;http&quot;
+42 / premiumize.me
+   \ &quot;premiumizeme&quot;
+43 / seafile
+   \ &quot;seafile&quot;
+Storage&gt; 15
+Google Application Client Id
+Setting your own is recommended.
+See https://rclone.org/drive/#making-your-own-client-id for how to create your own.
+If you leave this blank, it will use an internal key which is low performance.
+Enter a string value. Press Enter for the default (&quot;&quot;).
+client_id&gt; 输入id
+OAuth Client Secret
+Leave blank normally.
+Enter a string value. Press Enter for the default (&quot;&quot;).
+client_secret&gt; 输入密钥
+Scope that rclone should use when requesting access from drive.
+Enter a string value. Press Enter for the default (&quot;&quot;).
+Choose a number from below, or type in your own value
+ 1 / Full access all files, excluding Application Data Folder.
+   \ &quot;drive&quot;
+ 2 / Read-only access to file metadata and file contents.
+   \ &quot;drive.readonly&quot;
+   / Access to files created by rclone only.
+ 3 | These are visible in the drive website.
+   | File authorization is revoked when the user deauthorizes the app.
+   \ &quot;drive.file&quot;
+   / Allows read and write access to the Application Data folder.
+ 4 | This is not visible in the drive website.
+   \ &quot;drive.appfolder&quot;
+   / Allows read-only access to file metadata but
+ 5 | does not allow any access to read or download file content.
+   \ &quot;drive.metadata.readonly&quot;
+scope&gt; 1
+ID of the root folder
+Leave blank normally.
+
+Fill in to access &quot;Computers&quot; folders (see docs), or for rclone to use
+a non root folder as its starting point.
+
+Enter a string value. Press Enter for the default (&quot;&quot;).
+root_folder_id&gt; 
+Service Account Credentials JSON file path 
+Leave blank normally.
+Needed only if you want use SA instead of interactive login.
+
+Leading `~` will be expanded in the file name as will environment variables such as `${RCLONE_CONFIG_DIR}`.
+
+Enter a string value. Press Enter for the default (&quot;&quot;).
+service_account_file&gt; 
+Edit advanced config?
+y) Yes
+n) No (default)
+y/n&gt; n
+Use auto config?
+ * Say Y if not sure
+ * Say N if you are working on a remote or headless machine
+
+y) Yes (default)
+n) No
+y/n&gt; n
+Verification code
+
+Go to this URL, authenticate then paste the code here.
+
+这里会给一个验证码
+
+Enter a string value. Press Enter for the default (&quot;&quot;).
+config_verification_code&gt; 输入上面网址的验证码
+Configure this as a Shared Drive (Team Drive)?
+y) Yes
+n) No (default)
+y/n&gt; y
+Shared Drive
+Enter a string value. Press Enter for the default 
+Choose a number from below, or type in an existing value
+ 1 / ************************
+   \ *************************
+ 2 / **********目标团队盘**********
+   \ ************************
+ 3 / *************************
+   \ **************************
+config_team_drive&gt; 2
+--------------------
+y) Yes this is OK (default)
+e) Edit this remote
+d) Delete this remote
+y/e/d&gt; y
+Current remotes:
+
+Name                 Type
+====                 ====
+louisteam            drive
+
+e) Edit existing remote
+n) New remote
+d) Delete remote
+r) Rename remote
+c) Copy remote
+s) Set configuration password
+q) Quit config
+e/n/d/r/c/s/q&gt; q
+</code></pre>
+<p>这样就完成了 rclone 的安装与配置。</p>
+<p>附：申请 google api</p>
+<p>打开<a href="https://console.developers.google.com/apis/api/drive.googleapis.com/overview">google 开发控制后台</a>，启用 API 之后建一个项目，之后新建 Qauth 认证信息，类型选桌面应用，名字自己取，之后就会提示下载配置文件，里面就有私有的 Client_ID 和 Client_secret。（过程大概就是这么个过程，具体已经记不太清了，中途可能还需要验证信息啥的。）</p>
+<p>附：配置文件备份</p>
+<pre><code>rclone config file  // 查看 rclone 配置文件所在位置
+cd /root/.config/rclone/  
+</code></pre>
+<p>之后就可以把配置文件保存到本地进行备份了。</p>
+<h2 id="安装并配置-autorclone">安装并配置 AutoRclone</h2>
+<p>首先需要安装 python3，这在 centos8 中式很容易的，其他系统请自行百度。</p>
+<pre><code>dnf install python3
+python3 --version  // 返回版本号就说明安装成功
+</code></pre>
+<p>接下来开始安装：</p>
+<pre><code>git clone https://github.com/xyou365/AutoRclone &amp;&amp; cd AutoRclone
+pip3 install -r requirements.txt  
+</code></pre>
+<p>将刚才 google api 生成的授权文件拷贝到 <code>/autoclone/</code> 下面，然后开始生成 SA 账号：</p>
+<pre><code>python gen_sa_accounts.py --quick-setup 1 --new-only  // 这个指令会新建一个项目并生成100个sa
+</code></pre>
+<p>附：使用命令 <code>python gen_sa_accounts.py -h</code> 可以查看更多操作。</p>
+<p>生成 SA 成功之后（可能需要先验证）会在 <code>/AutoClone/accounts/</code> 下面创建一百个账号文件，将其下载到本地进行备份以便迁移。接着我们需要提取出 SA 的信息添加到团队盘群组，这里需要用到 <a href="https://chrome.google.com/webstore/detail/email-extractor/jdianbbpnakhcmfkcckaboohfgnngfcc">email extractor</a> 这个谷歌插件。重新访问开发者控制台，进入到 autoclone 创建的新项目里面找到 sa 列表之后使用插件导出即可。之后访问<a href="https://groups.google.com/">谷歌创建群组的网页</a>把邮箱全部拷贝进去即可。</p>
+<p>最后还要配置一下 rclone 的配置文件：在配置文件的末尾加上</p>
+<pre><code>service_account_file = /root/AutoRclone/accounts/***.json  // 任意一个SA即可
+service_account_file_path = /root/AutoRclone/accounts  // SA路径
+</code></pre>
+<h2 id="安装-gclone">安装 Gclone</h2>
+<p>这个就很简单了，因为它是 rclone 的一个 mod version，会自动读取 rclone 的配置文件进行操作。</p>
+<pre><code>bash &lt;(wget -qO- https://git.io/gclone.sh)
+</code></pre>
+<p>一行解决。</p>
+<h2 id="安装并配置-gd-util">安装并配置 gd-util</h2>
+<p>首先需要安装 node 环境：</p>
+<pre><code>curl -sL https://rpm.nodesource.com/setup_12.x | bash -  // 接着按里面的提示来
+yum install gcc-c++ make
+yum install -y nodejs
+</code></pre>
+<p>上述步骤成功之后就可以开始安装 gd-util 了。</p>
+<pre><code>git clone https://github.com/iwestlin/gd-utils &amp;&amp; cd gd-utils
+npm install --unsafe-perm=true --allow-root  // 以下安装依赖
+npm audit fix
+npm audit fix --force
+cp -r ~/AutoRclone/accounts/*  ./sa  // 拷贝 SA 文件
+</code></pre>
+<p>然后需要在 telegram 里创建一个 bot，基础操作，自行谷歌即可。我们需要拿到 bot 的 token 以及自己 tg 账号的 id。之后修改 gd-util 下的 config.js 文件，如下：</p>
+<pre><code>// 单次请求多少毫秒未响应以后超时（基准值，若连续超时则下次调整为上次的2倍）
+const TIMEOUT_BASE = 7000
+// 最大超时设置，比如某次请求，第一次7s超时，第二次14s，第三次28s，第四次56s，第五次不是112s而是60s，后续同理
+const TIMEOUT_MAX = 60000
+
+const LOG_DELAY = 5000 // 日志输出时间间隔，单位毫秒
+const PAGE_SIZE = 1000 // 每次网络请求读取目录下的文件数，数值越大，越有可能超时，不得超过1000
+
+const RETRY_LIMIT = 7 // 如果某次请求失败，允许其重试的最大次数
+const PARALLEL_LIMIT = 20 // 网络请求的并行数量，可根据网络环境调整
+
+const DEFAULT_TARGET = '0APihdpPbWzZYUk9PVA' // 必填，拷贝默认目的地ID，如果不指定target，则会复制到此处，建议填写团队盘ID
+
+const AUTH = { // 如果您拥有service account的json授权文件，可将其拷贝至 sa 目录中以代替 client_id/secret/refrest_token
+  client_id: '',
+  client_secret: '',
+  refresh_token: '',
+  expires: 0, // 可以留空
+  access_token: '', // 可以留空
+  tg_token: '这里填token', // 你的 telegram robot 的 token，获取方法参见 https://core.telegram.org/bots#6-botfather
+  tg_whitelist: ['这里填你的tg账号的id'] // 你的tg username(t.me/username)，bot只会执行这个列表里的用户所发送的指令
+}
+
+module.exports = { AUTH, PARALLEL_LIMIT, RETRY_LIMIT, TIMEOUT_BASE, TIMEOUT_MAX, LOG_DELAY, PAGE_SIZE, DEFAULT_TARGET }
+</code></pre>
+<p>还没完：</p>
+<pre><code>npm i pm2 -g  // 开启守护程序
+pm2 start server.js --node-args=&quot;--max-old-space-size=1024&quot;  // 代码运行，监听端口为23333
+
+// 开放下端口
+firewall-cmd --permanent --add-port=23333/tcp
+firewall-cmd --reload
+</code></pre>
+<p>附：pm2 基本操作</p>
+<pre><code>pm2 logs  // 查看日志
+pm2 l  // 查看守护进程列表
+pm2 stop name  // 停止对应name的进程
+pm2 start name  // 开始对应name的进程
+pm2 reload name  // 重启对应name的进程
+</code></pre>
+<p>接下来安装并配置 nginx：</p>
+<pre><code>yum list |grep nginx
+yum -y install nginx 
+systemctl start nginx  // 启动
+systemctl enable nginx  // 设置开机启动
+vi /etc/nginx/conf.d/gdutil.conf  // 新建一个配置文件
+firewall-cmd --permanent --add-service=http  // 开放80端口，下面配置 nginx 反代要用到
+firewall-cmd --reload
+</code></pre>
+<p>配置文件中内容如下：</p>
+<pre><code>server {
+  listen 80;
+  server_name 你的域名;
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_pass http://127.0.0.1:23333/;
+  }
+}
+</code></pre>
+<p>注意这里需要先有一个域名并解析到 cloudflare（添加一个A记录，指向你服务器的 ipv4 地址）。当然也可以使用 https 协议，那就需要配置 SSL 证书了，关于 SSL 证书的问题日后再议。上面的设置只用到了 80 端口，连接的过程就变成了 tg bot 到 cf 走 https 然后 cf 到服务器走 http。配置改完之后不要忘记重启 nginx：<code>nginx -s reload</code>。</p>
+<p>用下面的链接进行一下测试：</p>
+<pre><code>curl 'http://你的域名/api/gdurl/count?fid=1f_n_k9Z9xXPCEXUqA82-b_0eDgvbWPhT'
+</code></pre>
+<p>发现返回 502，解决方法如下：</p>
+<pre><code>setenforce 0  // 关闭selinux
+nginx -s reload
+</code></pre>
+<p>重新测试之后发现有效，则可以使用命令 <code>sed -i '/^SELINUX=/s/enforcing/disabled/' /etc/selinux/config</code> 永久关闭 selinux。</p>
+<p>最后执行以下语句：</p>
+<pre><code>curl -F &quot;url=你的域名/api/gdurl/tgbot&quot; 'https://api.telegram.org/bot这里写你的bot的token/setWebhook'
+</code></pre>
+<p>如果链接成功的话，你的机器人会给你发送使用帮助，如果没有，尝试在对话框中输入 <code>/help</code>，如果再没有的话，请检查你的设置步骤。</p>
+<p>最后愉快地随便找个资源试试水，没问题就行了。</p>
+<p>后记：这只是其中一种方法，还有一些奇技淫巧，比如利用 google colab 或者 IBM 示例一键脚本，或者 github 上各种各样的一键脚本等等......不过本人只是略有耳闻，并未尝试，有心人可以自行研究。另外，如果转存到半路就已经提示转存结束，可能是因为资源被限流了，可以换一天再试试看。</p>
 
             </div>
             <div class="post-footer">
@@ -406,7 +929,7 @@ ln -s /var/snap/nextcloud/common/nextcloud/data/louis/files /root/nextcloud
     </li>
     <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/" title="nextcloud 安装笔记">https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/</a>
+      <a href="https://icantnotfindaname.github.io/post/gu-ge-zhuan-cun-jiu-ji-zhuan-ye-pei-zhi/" title="VPS 究极专业配置网盘篇（网盘+转存）">https://icantnotfindaname.github.io/post/gu-ge-zhuan-cun-jiu-ji-zhuan-ye-pei-zhi/</a>
     </li>
     <li class="post-copyright-license">
       <strong>版权声明： </strong>
@@ -419,21 +942,19 @@ ln -s /var/snap/nextcloud/common/nextcloud/data/louis/files /root/nextcloud
     
       <a href="https://icantnotfindaname.github.io/tag/YpdmMR3r7/"># VPS</a>
     
+      <a href="https://icantnotfindaname.github.io/tag/Hbe3VERgqS/"># Skill</a>
+    
       <a href="https://icantnotfindaname.github.io/tag/HbiuaTuLgI/"># Linux</a>
     
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="如何看懂生肉？" href="https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/">如何看懂生肉？</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="如何看懂生肉？" href="https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="Net-Speeder 加速" href="https://icantnotfindaname.github.io/post/net-speeder-jia-su/">Net-Speeder 加速</a>
-        <a class="nav-mobile-next" title="Net-Speeder 加速" href="https://icantnotfindaname.github.io/post/net-speeder-jia-su/">下一篇</a>
+        <a class="nav-pc-next" title="一元积分学的概念和计算" href="https://icantnotfindaname.github.io/post/yi-yuan-ji-fen-xue-de-gai-nian-he-ji-suan/">一元积分学的概念和计算</a>
+        <a class="nav-mobile-next" title="一元积分学的概念和计算" href="https://icantnotfindaname.github.io/post/yi-yuan-ji-fen-xue-de-gai-nian-he-ji-suan/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>

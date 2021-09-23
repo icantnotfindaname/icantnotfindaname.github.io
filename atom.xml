@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-11T08:31:32.926Z</updated>
+    <updated>2021-09-23T18:02:50.927Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -10,6 +10,443 @@
     <logo>https://icantnotfindaname.github.io/images/avatar.png</logo>
     <icon>https://icantnotfindaname.github.io/favicon.ico</icon>
     <rights>All rights reserved 2021, Louispace</rights>
+    <entry>
+        <title type="html"><![CDATA[VPS 究极专业配置网盘篇（网盘+转存）]]></title>
+        <id>https://icantnotfindaname.github.io/post/gu-ge-zhuan-cun-jiu-ji-zhuan-ye-pei-zhi/</id>
+        <link href="https://icantnotfindaname.github.io/post/gu-ge-zhuan-cun-jiu-ji-zhuan-ye-pei-zhi/">
+        </link>
+        <updated>2021-09-23T08:26:40.000Z</updated>
+        <summary type="html"><![CDATA[<p>写在前面：以前浸淫在 BT 和 PT 一段时间，后面又兼修了 GD 转存，适逢今日入手一台大盘鸡，决定重新配置一下，顺便写篇文章留作纪念。兜兜转转之后颇有一些感悟：PT 太累人，BT 可分忧，白嫖一时爽，莫做松鼠党。另：不要只是闷头转存别人的资源，也多多贡献一下自己的力量，至少可以帮忙分流。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>写在前面：以前浸淫在 BT 和 PT 一段时间，后面又兼修了 GD 转存，适逢今日入手一台大盘鸡，决定重新配置一下，顺便写篇文章留作纪念。兜兜转转之后颇有一些感悟：PT 太累人，BT 可分忧，白嫖一时爽，莫做松鼠党。另：不要只是闷头转存别人的资源，也多多贡献一下自己的力量，至少可以帮忙分流。</p>
+<!-- more -->
+<p>整体框架：cloudreve 是一个网盘，我用来作 webdav 的，也可以将存储资源可视化，有的时候也用来做离线下载。rclone 是 GD 转存的一切基础，autoclone 基于 rclone 增加了有关 SA 的操作，用来突破每日 750g 的限制，gclone 在 autoclone 的基础上增加了对 SA 的优化操作，但是底层还是 rclone。gd-util 提供了对 tg bot 的支持，日常转存更加简单，而且还可以更加高效地使用 SA。</p>
+<h2 id="初始化-vps">初始化 VPS</h2>
+<pre><code>yum update
+yum install -y curl wget 2&gt; /dev/null || apt install -y curl wget
+wget -O jcnfbox.sh https://raw.githubusercontent.com/Netflixxp/jcnf-box/main/jcnfbox.sh &amp;&amp; chmod +x jcnfbox.sh &amp;&amp; clear &amp;&amp; ./jcnfbox.sh
+
+// 选择7测试一下流媒体解锁 选择14安装bbr加速 选择1进行综合测试
+
+yum -y install epel-release
+yum -y install unzip zip screen fuse fuse-devel git  // 这里安装一些常用的工具
+</code></pre>
+<h2 id="安装并配置-cloudreve">安装并配置 cloudreve *</h2>
+<pre><code>wget https://github.com/cloudreve/Cloudreve/releases/download/3.3.2/cloudreve_3.3.2_linux_amd64.tar.gz
+tar -zxvf cloudreve_3.3.2_linux_amd64.tar.gz
+rm -rf cloudreve_3.3.2_linux_amd64.tar.gz
+mkdir cloud
+mv cloudreve cloud/
+cd cloud/
+nohup ./cloudreve &amp;&gt; main.log &amp;  // 使用nohup让网盘后台运行，注意我这里没有设置开机启动
+firewall-cmd --zone=public --add-port=5212/tcp --permanent  // cloudreve默认使用5212端口，所以这里要开放一下
+firewall-cmd --reload
+cat main.log  // 查看cloudreve运行日志，第一次运行的时候会自动初始化账号密码
+</code></pre>
+<p>之后点击右上方头像，控制面板-&gt;用户组可以修改用户可供存储的最大容量。接下来安装 aria2 为 cloudreve 设置离线下载。</p>
+<h2 id="安装并配置-aria2">安装并配置 Aria2</h2>
+<pre><code>yum install ca-certificates
+wget -N git.io/aria2.sh &amp;&amp; chmod +x aria2.sh
+./aria2.sh  // 选择1开始安装，此一键脚本会自动开放对应端口，不用手动开放，之后记住RPC密钥，重新运行脚本选择12自动更新BT-tracker
+</code></pre>
+<p>登录 cloudreve，选择控制面板-&gt;参数设置-&gt;离线下载，填入相应的地址和密钥，临时目录选择脚本自动创建的 <code>/root/downloads/</code> 即可。最后点击最下面的测试链接，测试通过之后保存即可。</p>
+<h2 id="安装并配置-rclone">安装并配置 Rclone</h2>
+<p><a href="https://rclone.org/install/">官网</a>有各个系统的安装示例，照着来就行。</p>
+<pre><code>curl https://rclone.org/install.sh | sudo bash
+rclone config  // 进入rclone设置
+</code></pre>
+<p>这里用私人 API 配置一个谷歌团队盘：</p>
+<pre><code>[root@servarica ~]# rclone config
+No remotes found - make a new one
+n) New remote
+s) Set configuration password
+q) Quit config
+n/s/q&gt; n
+name&gt; louisteam  // 这里自己取一个名字
+Type of storage to configure.
+Enter a string value. Press Enter for the default (&quot;&quot;).
+Choose a number from below, or type in your own value
+ 1 / 1Fichier
+   \ &quot;fichier&quot;
+ 2 / Alias for an existing remote
+   \ &quot;alias&quot;
+ 3 / Amazon Drive
+   \ &quot;amazon cloud drive&quot;
+ 4 / Amazon S3 Compliant Storage Providers including AWS, Alibaba, Ceph, Digital Ocean, Dreamhost, IBM COS, Minio, SeaweedFS, and Tencent COS
+   \ &quot;s3&quot;
+ 5 / Backblaze B2
+   \ &quot;b2&quot;
+ 6 / Box
+   \ &quot;box&quot;
+ 7 / Cache a remote
+   \ &quot;cache&quot;
+ 8 / Citrix Sharefile
+   \ &quot;sharefile&quot;
+ 9 / Compress a remote
+   \ &quot;compress&quot;
+10 / Dropbox
+   \ &quot;dropbox&quot;
+11 / Encrypt/Decrypt a remote
+   \ &quot;crypt&quot;
+12 / Enterprise File Fabric
+   \ &quot;filefabric&quot;
+13 / FTP Connection
+   \ &quot;ftp&quot;
+14 / Google Cloud Storage (this is not Google Drive)
+   \ &quot;google cloud storage&quot;
+15 / Google Drive
+   \ &quot;drive&quot;
+16 / Google Photos
+   \ &quot;google photos&quot;
+17 / Hadoop distributed file system
+   \ &quot;hdfs&quot;
+18 / Hubic
+   \ &quot;hubic&quot;
+19 / In memory object storage system.
+   \ &quot;memory&quot;
+20 / Jottacloud
+   \ &quot;jottacloud&quot;
+21 / Koofr
+   \ &quot;koofr&quot;
+22 / Local Disk
+   \ &quot;local&quot;
+23 / Mail.ru Cloud
+   \ &quot;mailru&quot;
+24 / Mega
+   \ &quot;mega&quot;
+25 / Microsoft Azure Blob Storage
+   \ &quot;azureblob&quot;
+26 / Microsoft OneDrive
+   \ &quot;onedrive&quot;
+27 / OpenDrive
+   \ &quot;opendrive&quot;
+28 / OpenStack Swift (Rackspace Cloud Files, Memset Memstore, OVH)
+   \ &quot;swift&quot;
+29 / Pcloud
+   \ &quot;pcloud&quot;
+30 / Put.io
+   \ &quot;putio&quot;
+31 / QingCloud Object Storage
+   \ &quot;qingstor&quot;
+32 / SSH/SFTP Connection
+   \ &quot;sftp&quot;
+33 / Sugarsync
+   \ &quot;sugarsync&quot;
+34 / Tardigrade Decentralized Cloud Storage
+   \ &quot;tardigrade&quot;
+35 / Transparently chunk/split large files
+   \ &quot;chunker&quot;
+36 / Union merges the contents of several upstream fs
+   \ &quot;union&quot;
+37 / Uptobox
+   \ &quot;uptobox&quot;
+38 / Webdav
+   \ &quot;webdav&quot;
+39 / Yandex Disk
+   \ &quot;yandex&quot;
+40 / Zoho
+   \ &quot;zoho&quot;
+41 / http Connection
+   \ &quot;http&quot;
+42 / premiumize.me
+   \ &quot;premiumizeme&quot;
+43 / seafile
+   \ &quot;seafile&quot;
+Storage&gt; 15
+Google Application Client Id
+Setting your own is recommended.
+See https://rclone.org/drive/#making-your-own-client-id for how to create your own.
+If you leave this blank, it will use an internal key which is low performance.
+Enter a string value. Press Enter for the default (&quot;&quot;).
+client_id&gt; 输入id
+OAuth Client Secret
+Leave blank normally.
+Enter a string value. Press Enter for the default (&quot;&quot;).
+client_secret&gt; 输入密钥
+Scope that rclone should use when requesting access from drive.
+Enter a string value. Press Enter for the default (&quot;&quot;).
+Choose a number from below, or type in your own value
+ 1 / Full access all files, excluding Application Data Folder.
+   \ &quot;drive&quot;
+ 2 / Read-only access to file metadata and file contents.
+   \ &quot;drive.readonly&quot;
+   / Access to files created by rclone only.
+ 3 | These are visible in the drive website.
+   | File authorization is revoked when the user deauthorizes the app.
+   \ &quot;drive.file&quot;
+   / Allows read and write access to the Application Data folder.
+ 4 | This is not visible in the drive website.
+   \ &quot;drive.appfolder&quot;
+   / Allows read-only access to file metadata but
+ 5 | does not allow any access to read or download file content.
+   \ &quot;drive.metadata.readonly&quot;
+scope&gt; 1
+ID of the root folder
+Leave blank normally.
+
+Fill in to access &quot;Computers&quot; folders (see docs), or for rclone to use
+a non root folder as its starting point.
+
+Enter a string value. Press Enter for the default (&quot;&quot;).
+root_folder_id&gt; 
+Service Account Credentials JSON file path 
+Leave blank normally.
+Needed only if you want use SA instead of interactive login.
+
+Leading `~` will be expanded in the file name as will environment variables such as `${RCLONE_CONFIG_DIR}`.
+
+Enter a string value. Press Enter for the default (&quot;&quot;).
+service_account_file&gt; 
+Edit advanced config?
+y) Yes
+n) No (default)
+y/n&gt; n
+Use auto config?
+ * Say Y if not sure
+ * Say N if you are working on a remote or headless machine
+
+y) Yes (default)
+n) No
+y/n&gt; n
+Verification code
+
+Go to this URL, authenticate then paste the code here.
+
+这里会给一个验证码
+
+Enter a string value. Press Enter for the default (&quot;&quot;).
+config_verification_code&gt; 输入上面网址的验证码
+Configure this as a Shared Drive (Team Drive)?
+y) Yes
+n) No (default)
+y/n&gt; y
+Shared Drive
+Enter a string value. Press Enter for the default 
+Choose a number from below, or type in an existing value
+ 1 / ************************
+   \ *************************
+ 2 / **********目标团队盘**********
+   \ ************************
+ 3 / *************************
+   \ **************************
+config_team_drive&gt; 2
+--------------------
+y) Yes this is OK (default)
+e) Edit this remote
+d) Delete this remote
+y/e/d&gt; y
+Current remotes:
+
+Name                 Type
+====                 ====
+louisteam            drive
+
+e) Edit existing remote
+n) New remote
+d) Delete remote
+r) Rename remote
+c) Copy remote
+s) Set configuration password
+q) Quit config
+e/n/d/r/c/s/q&gt; q
+</code></pre>
+<p>这样就完成了 rclone 的安装与配置。</p>
+<p>附：申请 google api</p>
+<p>打开<a href="https://console.developers.google.com/apis/api/drive.googleapis.com/overview">google 开发控制后台</a>，启用 API 之后建一个项目，之后新建 Qauth 认证信息，类型选桌面应用，名字自己取，之后就会提示下载配置文件，里面就有私有的 Client_ID 和 Client_secret。（过程大概就是这么个过程，具体已经记不太清了，中途可能还需要验证信息啥的。）</p>
+<p>附：配置文件备份</p>
+<pre><code>rclone config file  // 查看 rclone 配置文件所在位置
+cd /root/.config/rclone/  
+</code></pre>
+<p>之后就可以把配置文件保存到本地进行备份了。</p>
+<h2 id="安装并配置-autorclone">安装并配置 AutoRclone</h2>
+<p>首先需要安装 python3，这在 centos8 中式很容易的，其他系统请自行百度。</p>
+<pre><code>dnf install python3
+python3 --version  // 返回版本号就说明安装成功
+</code></pre>
+<p>接下来开始安装：</p>
+<pre><code>git clone https://github.com/xyou365/AutoRclone &amp;&amp; cd AutoRclone
+pip3 install -r requirements.txt  
+</code></pre>
+<p>将刚才 google api 生成的授权文件拷贝到 <code>/autoclone/</code> 下面，然后开始生成 SA 账号：</p>
+<pre><code>python gen_sa_accounts.py --quick-setup 1 --new-only  // 这个指令会新建一个项目并生成100个sa
+</code></pre>
+<p>附：使用命令 <code>python gen_sa_accounts.py -h</code> 可以查看更多操作。</p>
+<p>生成 SA 成功之后（可能需要先验证）会在 <code>/AutoClone/accounts/</code> 下面创建一百个账号文件，将其下载到本地进行备份以便迁移。接着我们需要提取出 SA 的信息添加到团队盘群组，这里需要用到 <a href="https://chrome.google.com/webstore/detail/email-extractor/jdianbbpnakhcmfkcckaboohfgnngfcc">email extractor</a> 这个谷歌插件。重新访问开发者控制台，进入到 autoclone 创建的新项目里面找到 sa 列表之后使用插件导出即可。之后访问<a href="https://groups.google.com/">谷歌创建群组的网页</a>把邮箱全部拷贝进去即可。</p>
+<p>最后还要配置一下 rclone 的配置文件：在配置文件的末尾加上</p>
+<pre><code>service_account_file = /root/AutoRclone/accounts/***.json  // 任意一个SA即可
+service_account_file_path = /root/AutoRclone/accounts  // SA路径
+</code></pre>
+<h2 id="安装-gclone">安装 Gclone</h2>
+<p>这个就很简单了，因为它是 rclone 的一个 mod version，会自动读取 rclone 的配置文件进行操作。</p>
+<pre><code>bash &lt;(wget -qO- https://git.io/gclone.sh)
+</code></pre>
+<p>一行解决。</p>
+<h2 id="安装并配置-gd-util">安装并配置 gd-util</h2>
+<p>首先需要安装 node 环境：</p>
+<pre><code>curl -sL https://rpm.nodesource.com/setup_12.x | bash -  // 接着按里面的提示来
+yum install gcc-c++ make
+yum install -y nodejs
+</code></pre>
+<p>上述步骤成功之后就可以开始安装 gd-util 了。</p>
+<pre><code>git clone https://github.com/iwestlin/gd-utils &amp;&amp; cd gd-utils
+npm install --unsafe-perm=true --allow-root  // 以下安装依赖
+npm audit fix
+npm audit fix --force
+cp -r ~/AutoRclone/accounts/*  ./sa  // 拷贝 SA 文件
+</code></pre>
+<p>然后需要在 telegram 里创建一个 bot，基础操作，自行谷歌即可。我们需要拿到 bot 的 token 以及自己 tg 账号的 id。之后修改 gd-util 下的 config.js 文件，如下：</p>
+<pre><code>// 单次请求多少毫秒未响应以后超时（基准值，若连续超时则下次调整为上次的2倍）
+const TIMEOUT_BASE = 7000
+// 最大超时设置，比如某次请求，第一次7s超时，第二次14s，第三次28s，第四次56s，第五次不是112s而是60s，后续同理
+const TIMEOUT_MAX = 60000
+
+const LOG_DELAY = 5000 // 日志输出时间间隔，单位毫秒
+const PAGE_SIZE = 1000 // 每次网络请求读取目录下的文件数，数值越大，越有可能超时，不得超过1000
+
+const RETRY_LIMIT = 7 // 如果某次请求失败，允许其重试的最大次数
+const PARALLEL_LIMIT = 20 // 网络请求的并行数量，可根据网络环境调整
+
+const DEFAULT_TARGET = '0APihdpPbWzZYUk9PVA' // 必填，拷贝默认目的地ID，如果不指定target，则会复制到此处，建议填写团队盘ID
+
+const AUTH = { // 如果您拥有service account的json授权文件，可将其拷贝至 sa 目录中以代替 client_id/secret/refrest_token
+  client_id: '',
+  client_secret: '',
+  refresh_token: '',
+  expires: 0, // 可以留空
+  access_token: '', // 可以留空
+  tg_token: '这里填token', // 你的 telegram robot 的 token，获取方法参见 https://core.telegram.org/bots#6-botfather
+  tg_whitelist: ['这里填你的tg账号的id'] // 你的tg username(t.me/username)，bot只会执行这个列表里的用户所发送的指令
+}
+
+module.exports = { AUTH, PARALLEL_LIMIT, RETRY_LIMIT, TIMEOUT_BASE, TIMEOUT_MAX, LOG_DELAY, PAGE_SIZE, DEFAULT_TARGET }
+</code></pre>
+<p>还没完：</p>
+<pre><code>npm i pm2 -g  // 开启守护程序
+pm2 start server.js --node-args=&quot;--max-old-space-size=1024&quot;  // 代码运行，监听端口为23333
+
+// 开放下端口
+firewall-cmd --permanent --add-port=23333/tcp
+firewall-cmd --reload
+</code></pre>
+<p>附：pm2 基本操作</p>
+<pre><code>pm2 logs  // 查看日志
+pm2 l  // 查看守护进程列表
+pm2 stop name  // 停止对应name的进程
+pm2 start name  // 开始对应name的进程
+pm2 reload name  // 重启对应name的进程
+</code></pre>
+<p>接下来安装并配置 nginx：</p>
+<pre><code>yum list |grep nginx
+yum -y install nginx 
+systemctl start nginx  // 启动
+systemctl enable nginx  // 设置开机启动
+vi /etc/nginx/conf.d/gdutil.conf  // 新建一个配置文件
+firewall-cmd --permanent --add-service=http  // 开放80端口，下面配置 nginx 反代要用到
+firewall-cmd --reload
+</code></pre>
+<p>配置文件中内容如下：</p>
+<pre><code>server {
+  listen 80;
+  server_name 你的域名;
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_pass http://127.0.0.1:23333/;
+  }
+}
+</code></pre>
+<p>注意这里需要先有一个域名并解析到 cloudflare（添加一个A记录，指向你服务器的 ipv4 地址）。当然也可以使用 https 协议，那就需要配置 SSL 证书了，关于 SSL 证书的问题日后再议。上面的设置只用到了 80 端口，连接的过程就变成了 tg bot 到 cf 走 https 然后 cf 到服务器走 http。配置改完之后不要忘记重启 nginx：<code>nginx -s reload</code>。</p>
+<p>用下面的链接进行一下测试：</p>
+<pre><code>curl 'http://你的域名/api/gdurl/count?fid=1f_n_k9Z9xXPCEXUqA82-b_0eDgvbWPhT'
+</code></pre>
+<p>发现返回 502，解决方法如下：</p>
+<pre><code>setenforce 0  // 关闭selinux
+nginx -s reload
+</code></pre>
+<p>重新测试之后发现有效，则可以使用命令 <code>sed -i '/^SELINUX=/s/enforcing/disabled/' /etc/selinux/config</code> 永久关闭 selinux。</p>
+<p>最后执行以下语句：</p>
+<pre><code>curl -F &quot;url=你的域名/api/gdurl/tgbot&quot; 'https://api.telegram.org/bot这里写你的bot的token/setWebhook'
+</code></pre>
+<p>如果链接成功的话，你的机器人会给你发送使用帮助，如果没有，尝试在对话框中输入 <code>/help</code>，如果再没有的话，请检查你的设置步骤。</p>
+<p>最后愉快地随便找个资源试试水，没问题就行了。</p>
+<p>后记：这只是其中一种方法，还有一些奇技淫巧，比如利用 google colab 或者 IBM 示例一键脚本，或者 github 上各种各样的一键脚本等等......不过本人只是略有耳闻，并未尝试，有心人可以自行研究。另外，如果转存到半路就已经提示转存结束，可能是因为资源被限流了，可以换一天再试试看。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[一元积分学的概念和计算]]></title>
+        <id>https://icantnotfindaname.github.io/post/yi-yuan-ji-fen-xue-de-gai-nian-he-ji-suan/</id>
+        <link href="https://icantnotfindaname.github.io/post/yi-yuan-ji-fen-xue-de-gai-nian-he-ji-suan/">
+        </link>
+        <updated>2021-09-20T01:43:08.000Z</updated>
+        <summary type="html"><![CDATA[<p>这一章和一元微分学构成了高等数学的两大计算基础（自己说的），为了基本掌握这一章，真是要了我的老命了。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>这一章和一元微分学构成了高等数学的两大计算基础（自己说的），为了基本掌握这一章，真是要了我的老命了。</p>
+<!-- more -->
+<h3 id="两个存在定理">两个存在定理</h3>
+<p>首先是两个存在定理，一个是<strong>原函数（不定积分）存在定理</strong>，一个是<strong>定积分存在定理</strong>。原函数存在只需要连续即可，连续分为两种，一种是<strong>直接连续</strong>，一种是<strong>间断连续</strong>，也就是在函数存在振荡间断点的时候，可以近似看成是连续的。定积分存在从本质上讲就是需要一个条件，那就是<strong>有界</strong>（这是一个必要条件）。根据这个条件，就可以把条件具体化一下：1. 连续 2. 单调 3. 有界 + 有限个间断点 （这些其实隐藏的都是一个条件，那就是有界，再具体化一点就是有限个 x 和有限个 y。</p>
+<h3 id="补充间断点">补充：间断点</h3>
+<ol>
+<li>第一类
+<ol>
+<li>跳跃间断点 =》双侧极限不存在</li>
+<li>可去间断点 =》<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>lim</mi><mo>⁡</mo><mrow><mi>x</mi><mo>→</mo><msub><mi>x</mi><mn>0</mn></msub></mrow></msub><msup><mi>F</mi><mo mathvariant="normal">′</mo></msup><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mi>A</mi><mi mathvariant="normal">≠</mi><msup><mi>F</mi><mo mathvariant="normal">′</mo></msup><mrow><mo fence="true">(</mo><msub><mi>x</mi><mn>0</mn></msub><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lim _{x \rightarrow x_{0}} F^{\prime}(x)=A \neq F^{\prime}\left(x_{0}\right)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.001992em;vertical-align:-0.2501em;"></span><span class="mop"><span class="mop">lim</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139199999999997em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="mrel mtight">→</span><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31731428571428577em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">0</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2501em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord mathdefault">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">A</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel"><span class="mrel"><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.69444em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="rlap"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="inner"><span class="mrel"></span></span><span class="fix"></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span><span class="mrel">=</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.001892em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">0</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;">)</span></span></span></span></span></li>
+</ol>
+</li>
+<li>第二类
+<ol>
+<li>无穷间断点：极限无穷</li>
+<li>振荡间断点：极限在交替振荡（准确来说是间断点的邻域在不断的振荡）</li>
+</ol>
+</li>
+</ol>
+<h3 id="基本积分公式">基本积分公式</h3>
+<p>根据本人的潜心钻研，把基本的积分公式分为九组：</p>
+<ol>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>i</mi><mi>n</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">sinx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.65952em;vertical-align:0em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>o</mi><mi>s</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">cosx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord mathdefault">s</span><span class="mord mathdefault">x</span></span></span></span> =&gt; <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>−</mo><mi>c</mi><mi>o</mi><mi>s</mi><mi>x</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">-cosx + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">−</span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord mathdefault">s</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>i</mi><mi>n</mi><mi>x</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">sinx + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>i</mi><msup><mi>n</mi><mn>2</mn></msup><mi>x</mi></mrow><annotation encoding="application/x-tex">sin^2x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">i</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>o</mi><msup><mi>s</mi><mn>2</mn></msup><mi>x</mi></mrow><annotation encoding="application/x-tex">cos^2x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span></span></span></span> =&gt; 这个用的是倍角公式 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>(</mo><mi>x</mi><mo>−</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mi>s</mi><mi>i</mi><mi>n</mi><mn>2</mn><mi>x</mi><mo>)</mo><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">\frac{1}{2} (x-\frac{1}{2}sin2x) + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord mathdefault">s</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord">2</span><span class="mord mathdefault">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>(</mo><mi>x</mi><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mi>s</mi><mi>i</mi><mi>n</mi><mn>2</mn><mi>x</mi><mo>)</mo><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">\frac{1}{2} (x+\frac{1}{2}sin2x) + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mord mathdefault">s</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord">2</span><span class="mord mathdefault">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>s</mi><mi>c</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">cscx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">s</span><span class="mord mathdefault">c</span><span class="mord mathdefault">x</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>e</mi><mi>c</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">secx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span><span class="mord mathdefault">x</span></span></span></span> =&gt; 这两个直接记就行 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>n</mi><mi mathvariant="normal">∣</mi><mi>s</mi><mi>e</mi><mi>c</mi><mi>x</mi><mo>+</mo><mi>t</mi><mi>a</mi><mi>n</mi><mi>x</mi><mi mathvariant="normal">∣</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">ln|secx + tanx| + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">n</span><span class="mord">∣</span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>n</mi><mi mathvariant="normal">∣</mi><mi>c</mi><mi>s</mi><mi>c</mi><mi>x</mi><mo>−</mo><mi>t</mi><mi>a</mi><mi>n</mi><mi>x</mi><mi mathvariant="normal">∣</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">ln|cscx -tanx| + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">n</span><span class="mord">∣</span><span class="mord mathdefault">c</span><span class="mord mathdefault">s</span><span class="mord mathdefault">c</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>e</mi><msup><mi>c</mi><mn>2</mn></msup><mi>x</mi></mrow><annotation encoding="application/x-tex">sec^2x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>s</mi><msup><mi>c</mi><mn>2</mn></msup><mi>x</mi></mrow><annotation encoding="application/x-tex">csc^2x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">s</span><span class="mord"><span class="mord mathdefault">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span></span></span></span> =&gt; 这两个也是求导公式直接记就行了 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>t</mi><mi>a</mi><mi>n</mi><mi>x</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">tanx + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69841em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>−</mo><mi>c</mi><mi>o</mi><mi>t</mi><mi>x</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">-cotx + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69841em;vertical-align:-0.08333em;"></span><span class="mord">−</span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord mathdefault">t</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>t</mi><mi>a</mi><mi>n</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">tanx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>o</mi><mi>t</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">cotx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord mathdefault">t</span><span class="mord mathdefault">x</span></span></span></span> =&gt; <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>−</mo><mi>l</mi><mi>n</mi><mi mathvariant="normal">∣</mi><mi>c</mi><mi>o</mi><mi>s</mi><mi>x</mi><mi mathvariant="normal">∣</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">-ln|cosx| + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">−</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">n</span><span class="mord">∣</span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord mathdefault">s</span><span class="mord mathdefault">x</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>n</mi><mi mathvariant="normal">∣</mi><mi>s</mi><mi>i</mi><mi>n</mi><mi>x</mi><mi mathvariant="normal">∣</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">ln|sinx| + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">n</span><span class="mord">∣</span><span class="mord mathdefault">s</span><span class="mord mathdefault">i</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span><span class="mord">∣</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>t</mi><mi>a</mi><msup><mi>n</mi><mn>2</mn></msup><mi>x</mi></mrow><annotation encoding="application/x-tex">tan^2x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>o</mi><msup><mi>t</mi><mn>2</mn></msup><mi>x</mi></mrow><annotation encoding="application/x-tex">cot^2x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord"><span class="mord mathdefault">t</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span></span></span></span> =&gt; 这两个利用的是公式 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>t</mi><mi>a</mi><msup><mi>n</mi><mn>2</mn></msup><mi>x</mi><mo>=</mo><mi>s</mi><mi>e</mi><msup><mi>c</mi><mn>2</mn></msup><mi>x</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">tan^2x = sec^2x - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span><span class="mord"><span class="mord mathdefault">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>o</mi><msup><mi>t</mi><mn>2</mn></msup><mi>x</mi><mo>=</mo><mi>c</mi><mi>s</mi><msup><mi>c</mi><mn>2</mn></msup><mi>x</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">cot^2x = csc^2x - 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord"><span class="mord mathdefault">t</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.897438em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">s</span><span class="mord"><span class="mord mathdefault">c</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 结果是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>t</mi><mi>a</mi><mi>n</mi><mi>x</mi><mo>−</mo><mi>x</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">tanx - x + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69841em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>−</mo><mi>c</mi><mi>o</mi><mi>t</mi><mi>x</mi><mo>−</mo><mi>x</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">-cotx - x + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69841em;vertical-align:-0.08333em;"></span><span class="mord">−</span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord mathdefault">t</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>e</mi><mi>c</mi><mi>x</mi><mi>t</mi><mi>a</mi><mi>n</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">secxtanx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span><span class="mord mathdefault">x</span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mord mathdefault">n</span><span class="mord mathdefault">x</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>c</mi><mi>s</mi><mi>c</mi><mi>x</mi><mi>c</mi><mi>o</mi><mi>t</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">cscxcotx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathdefault">c</span><span class="mord mathdefault">s</span><span class="mord mathdefault">c</span><span class="mord mathdefault">x</span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord mathdefault">t</span><span class="mord mathdefault">x</span></span></span></span> =&gt; 求导公式直接记就行了 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>e</mi><mi>c</mi><mi>x</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">secx + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>−</mo><mi>c</mi><mi>o</mi><mi>t</mi><mi>x</mi><mo>+</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">-cotx + C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69841em;vertical-align:-0.08333em;"></span><span class="mord">−</span><span class="mord mathdefault">c</span><span class="mord mathdefault">o</span><span class="mord mathdefault">t</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{1 + x^2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2484389999999999em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mbin mtight">+</span><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><mrow><msup><mi>a</mi><mn>2</mn></msup><mo>+</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{a^2 + x^2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2484389999999999em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathdefault mtight">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin mtight">+</span><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><msqrt><mrow><mn>1</mn><mo>−</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{\sqrt{1 - x^2}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.383108em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.5445179999999996em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9221171428571429em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mtight">1</span><span class="mbin mtight">−</span><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.882117142857143em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,
+-10,-9.5,-14c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54c44.2,-33.3,65.8,
+-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10s173,378,173,378c0.7,0,
+35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429c69,-144,104.5,-217.7,106.5,
+-221c5.3,-9.3,12,-14,20,-14H400000v40H845.2724s-225.272,467,-225.272,467
+s-235,486,-235,486c-2.7,4.7,-9,7,-19,7c-6,0,-10,-1,-12,-3s-194,-422,-194,-422
+s-65,47,-65,47z M834 80H400000v40H845z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.11788285714285718em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><msqrt><mrow><msup><mi>a</mi><mn>2</mn></msup><mo>−</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{\sqrt{a^2 - x^2}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.383108em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.5445179999999996em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9221171428571429em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mtight"><span class="mord mathdefault mtight">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin mtight">−</span><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.882117142857143em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,
+-10,-9.5,-14c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54c44.2,-33.3,65.8,
+-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10s173,378,173,378c0.7,0,
+35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429c69,-144,104.5,-217.7,106.5,
+-221c5.3,-9.3,12,-14,20,-14H400000v40H845.2724s-225.272,467,-225.272,467
+s-235,486,-235,486c-2.7,4.7,-9,7,-19,7c-6,0,-10,-1,-12,-3s-194,-422,-194,-422
+s-65,47,-65,47z M834 80H400000v40H845z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.11788285714285718em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><msqrt><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>+</mo><msup><mi>a</mi><mn>2</mn></msup></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{\sqrt{x^2 + a^2}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.383108em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.5445179999999996em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9221171428571429em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin mtight">+</span><span class="mord mtight"><span class="mord mathdefault mtight">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.882117142857143em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,
+-10,-9.5,-14c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54c44.2,-33.3,65.8,
+-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10s173,378,173,378c0.7,0,
+35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429c69,-144,104.5,-217.7,106.5,
+-221c5.3,-9.3,12,-14,20,-14H400000v40H845.2724s-225.272,467,-225.272,467
+s-235,486,-235,486c-2.7,4.7,-9,7,-19,7c-6,0,-10,-1,-12,-3s-194,-422,-194,-422
+s-65,47,-65,47z M834 80H400000v40H845z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.11788285714285718em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><msqrt><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>−</mo><msup><mi>a</mi><mn>2</mn></msup></mrow></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{\sqrt{x^2 - a^2}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.383108em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.5445179999999996em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9221171428571429em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin mtight">−</span><span class="mord mtight"><span class="mord mathdefault mtight">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.882117142857143em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,
+-10,-9.5,-14c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54c44.2,-33.3,65.8,
+-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10s173,378,173,378c0.7,0,
+35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429c69,-144,104.5,-217.7,106.5,
+-221c5.3,-9.3,12,-14,20,-14H400000v40H845.2724s-225.272,467,-225.272,467
+s-235,486,-235,486c-2.7,4.7,-9,7,-19,7c-6,0,-10,-1,-12,-3s-194,-422,-194,-422
+s-65,47,-65,47z M834 80H400000v40H845z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.11788285714285718em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mn>1</mn><mrow><msup><mi>x</mi><mn>2</mn></msup><mo>−</mo><msup><mi>a</mi><mn>2</mn></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{x^2 - a^2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2484389999999999em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathdefault mtight">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin mtight">−</span><span class="mord mtight"><span class="mord mathdefault mtight">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msqrt><mrow><msup><mi>a</mi><mn>2</mn></msup><mo>−</mo><msup><mi>x</mi><mn>2</mn></msup></mrow></msqrt></mrow><annotation encoding="application/x-tex">\sqrt{a^2 - x^2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.04em;vertical-align:-0.12661100000000003em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.913389em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord" style="padding-left:0.833em;"><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.740108em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord"><span class="mord mathdefault">x</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.740108em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span><span style="top:-2.873389em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,
+-10,-9.5,-14c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54c44.2,-33.3,65.8,
+-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10s173,378,173,378c0.7,0,
+35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429c69,-144,104.5,-217.7,106.5,
+-221c5.3,-9.3,12,-14,20,-14H400000v40H845.2724s-225.272,467,-225.272,467
+s-235,486,-235,486c-2.7,4.7,-9,7,-19,7c-6,0,-10,-1,-12,-3s-194,-422,-194,-422
+s-65,47,-65,47z M834 80H400000v40H845z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.12661100000000003em;"><span></span></span></span></span></span></span></span></span></li>
+</ol>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[构造二叉树]]></title>
         <id>https://icantnotfindaname.github.io/post/gou-zao-er-cha-shu/</id>
@@ -516,62 +953,5 @@ void traversal_back__(TreeNode* root, vector&lt;int&gt; &amp;vec) {
 <!-- more -->
 <p>视频地址：https://www.bilibili.com/video/BV17341167ur?share_source=copy_web</p>
 <iframe src="//player.bilibili.com/player.html?aid=419940997&bvid=BV17341167ur&cid=392866033&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[如何看懂生肉？]]></title>
-        <id>https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/</id>
-        <link href="https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/">
-        </link>
-        <updated>2021-08-19T02:42:44.000Z</updated>
-        <summary type="html"><![CDATA[<p>这个短视频给了一个很简单有效的方法提升听力，但是我找不到原视频的地址了，文中提供的来源为tg群：黑洞资源笔记......</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>这个短视频给了一个很简单有效的方法提升听力，但是我找不到原视频的地址了，文中提供的来源为tg群：黑洞资源笔记......</p>
-<!-- more -->
-<p>在开始的时候，务必从一些简单难度的音频开始，接着逐渐加大难度，（如果难度过大，试着调低倍速）。当你发现你可以很轻松地听完整段材料时，不要满足于此，接着调高倍速进行练习。（可以听懂两倍速个人觉得就差不多了）</p>
-<p>视频地址：https://t.me/tieliu/14572</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[nextcloud 安装笔记]]></title>
-        <id>https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/</id>
-        <link href="https://icantnotfindaname.github.io/post/nextcloud-an-zhuang-bi-ji/">
-        </link>
-        <updated>2021-08-18T02:41:06.000Z</updated>
-        <summary type="html"><![CDATA[<p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件......</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>Nextcloud是ownCloud的创始人Frank Karlitschek创建的一个分支，他与原先ownCloud的一些团队成员继续开发Nextcloud，同时也成立了一家商业化公司，其目标就是将数据和通讯的控制权归还给用户。直到2019年初，Nextcloud已成为最受欢迎的私有云盘之一（下图所示）。与此同时，也有越来越多的开发者涌入社区，为Nextcloud开发了许多的应用插件......</p>
-<!-- more -->
-<p>Snap 是一个类似容器的东西，支持 CentOS7.6+，其他系统可以到 snap 的官网进行查看。</p>
-<p><a href="https://snapcraft.io/install/nextcloud/centos">Install Nextcloud on CentOS using the Snap Store | Snapcraft</a></p>
-<p>下载命令如下：</p>
-<pre><code class="language-bash">sudo yum install epel-release
-sudo yum install snapd
-sudo systemctl enable --now snapd.socket
-sudo ln -s /var/lib/snapd/snap /snap
-sudo snap install nextcloud
-
-// 以上已经下载完成
-// 换端口
-snap set nextcloud ports.http=60000
-
-// https 配置SSL
-nextcloud.enable-https lets-encrypt
-
-// 创建软连接
-ln -s /var/snap/nextcloud/common/nextcloud/data/louis/files /root/nextcloud
-</code></pre>
-<p>一些其他的命令可以查看官方 Github，可以解决 80% 的问题：</p>
-<p><a href="https://github.com/nextcloud/nextcloud-snap">GitHub - nextcloud/nextcloud-snap: ☁️📦 Nextcloud packaged as a snap</a></p>
-<p>或者官方文档：</p>
-<p><a href="https://docs.nextcloud.com/server/latest/admin_manual/installation/#installation">Installation and server configuration - Nextcloud latest Administration Manual latest documentation</a></p>
-<hr>
-<p>2021.08.23 Update<br>
-如果在服务器直接上传文件到 nextcloud 的 data 目录下，则需要手动扫描才可以在 web 上看到更新内容，推荐方法如下：</p>
-<pre><code class="language-bash">vi /var/snap/nextcloud/28417/nextcloud/config/config.php  // 配置文件路径请自行确定
-
-// 在最后一行添加
-'filesystem_check_changes' =&gt; true,
-</code></pre>
-]]></content>
     </entry>
 </feed>
