@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-09-24T02:01:19.682Z</updated>
+    <updated>2021-09-24T12:11:14.686Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -283,9 +283,18 @@ service_account_file_path = /root/AutoRclone/accounts  // SA路径
 <p>一行解决。</p>
 <h2 id="安装并配置-gd-util">安装并配置 gd-util</h2>
 <p>首先需要安装 node 环境：</p>
-<pre><code>curl -sL https://rpm.nodesource.com/setup_12.x | bash -  // 接着按里面的提示来
+<pre><code>curl -sL https://rpm.nodesource.com/setup_12.x | bash -  // 接着按里面的提示来，建议使用12.x版本
 yum install gcc-c++ make
 yum install -y nodejs
+
+// 顺便把 yarn 给装了
+curl --silent --location https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
+sudo dnf install yarn
+yarn --version
+
+// 如果嫌弃版本太老，可以用以下语句更新到最新版
+npm install -g n
+n stable  // 通过n这个更新模块将nodejs更新到最新的稳定版
 </code></pre>
 <p>上述步骤成功之后就可以开始安装 gd-util 了。</p>
 <pre><code>git clone https://github.com/iwestlin/gd-utils &amp;&amp; cd gd-utils
