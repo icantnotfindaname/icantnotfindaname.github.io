@@ -8,7 +8,7 @@
 <meta name="keywords" content="Louispace">
 <meta name="description" content="想做你的对手">
 <meta name="theme-color" content="#000">
-<title>构造二叉树 | Louispace</title>
+<title>关于魔术的几点 | Louispace</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1633695576491">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/gemini.css">
@@ -29,8 +29,8 @@
 
 
 
-  <meta name="description" content="构造二叉树" />
-  <meta name="keywords" content="Code,Algorithm,NPEE,DataStructure" />
+  <meta name="description" content="关于魔术的几点" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -174,8 +174,7 @@
       <div class="sidebar-body gemini" id="sidebar_body">
         
           
-            <div class="post-side-meta" id="post_side_meta">
-              
+            
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -226,196 +225,6 @@
 
 
 </div>
-            </div>
-            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
-              <div class="toc-box right-motion">
-  <div class="toc-wrapper auto-number auto"
-    id="toc_wrapper">
-    <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li><a href="#%E4%BB%8E%E4%B8%AD%E5%BA%8F%E5%92%8C%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86%E5%BA%8F%E5%88%97%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91">从中序和后序遍历序列构造二叉树</a></li>
-<li><a href="#%E4%BB%8E%E4%B8%AD%E5%BA%8F%E5%92%8C%E5%89%8D%E5%BA%8F%E9%81%8D%E5%8E%86%E5%BA%8F%E5%88%97%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91">从中序和前序遍历序列构造二叉树</a></li>
-</ul>
-</li>
-</ul>
-
-  </div>
-</div>
-
-<script>
-
-  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
-  let active = 'active-show', activeClass = 'active-current';
-  let tocWrapper = document.querySelector('#toc_wrapper');
-  let tocContent = tocWrapper.children[0];
-  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
-
-  function addTocNumber(elem, deep) {
-    if (!elem) {
-      return;
-    }
-    let prop = elem.__proto__;
-
-    if (prop === HTMLUListElement.prototype) {
-      for (let i = 0; i < elem.children.length; i++) {
-        addTocNumber(elem.children[i], deep + (i + 1) + '.');
-      }
-    } else if (prop === HTMLLIElement.prototype) {
-      // 保存li元素
-      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
-        lList.push(elem);
-      }
-      for (let i = 0; i < elem.children.length; i++) {
-        let cur = elem.children[i];
-        if (cur.__proto__ === HTMLAnchorElement.prototype) {
-          if (autoNumber) {
-            cur.text = deep + ' ' + cur.text;
-          }
-        } else if (cur.__proto__ === HTMLUListElement.prototype) {
-          addTocNumber(cur, deep);
-        }
-      }
-    }
-  }
-
-  function removeParentActiveClass() {
-    let parents = tocContent.querySelectorAll('.' + active)
-    parents.forEach(function (elem) {
-      elem.classList.remove(active);
-    });
-  }
-
-  function addActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.add(activeClass);
-    }
-  }
-
-  function removeActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.remove(activeClass);
-    }
-  }
-
-  function addActiveLiElemment(elem, parent) {
-    if (!elem || elem === parent) {
-      return;
-    } else {
-      if (elem.__proto__ === HTMLLIElement.prototype) {
-        elem.classList.add(active);
-      }
-      addActiveLiElemment(elem.parentElement, parent);
-    }
-  }
-
-  function showToc() {
-    if (tocWrapper) {
-      postBody = document.querySelector('#post_body');
-      for (let i = 0; i < postBody.children.length; i++) {
-        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
-          hList.push(postBody.children[i]);
-        }
-      }
-      if (tocWrapper.classList.contains('compress')) {
-        tocContent.classList.add('closed');
-      } else if (tocWrapper.classList.contains('no_compress')) {
-        tocContent.classList.add('expanded');
-      } else {
-        if (hList.length > 10) {
-          active = 'active-hidden'
-          tocContent.classList.add('closed');
-        } else {
-          tocContent.classList.add('expanded');
-        }
-      }
-    }
-  }
-
-  (function () {
-    // 处理不是从#一级标题开始目录
-    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
-      let con = tocContent.children[0].children[0];
-      tocContent.innerHTML = con.innerHTML;
-    }
-    let markdownItTOC = document.querySelector('.markdownIt-TOC');
-    let innerHeight = window.innerHeight;
-    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
-    addTocNumber(tocContent, '');
-  })();
-
-  document.addEventListener('scroll', function (e) {
-    if (lList.length <= 0) {
-      return;
-    }
-    let scrollTop = document.scrollingElement.scrollTop + 10;
-    let dir;
-
-    if (lastTop - scrollTop > 0) {
-      dir = 'up';
-    } else {
-      dir = 'down';
-    }
-
-    lastTop = scrollTop;
-    if (scrollTop <= 0) {
-      if (lastIndex >= 0 && lastIndex < hList.length) {
-        lList[lastIndex].classList.remove(activeClass);
-      }
-      return;
-    }
-
-    let current = 0, hasFind = false;
-    for (let i = 0; i < hList.length; i++) {
-      if (hList[i].offsetTop > scrollTop) {
-        current = i;
-        hasFind = true;
-        break;
-      }
-    }
-    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
-      current = hList.length - 1;
-    } else {
-      current--;
-    }
-    if (dir === 'down') {
-      if (current > lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex)
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    } else {
-      if (current < lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex);
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    }
-  });
-
-
-  window.addEventListener('load', function () {
-    showToc();
-    document.querySelector('#sidebar').style = 'display: block;';
-    tocWrapper.classList.add('toc-active');
-    setTimeout(function () {
-      if ("createEvent" in document) {
-        let evt = document.createEvent("HTMLEvents");
-        evt.initEvent("scroll", false, true);
-        document.dispatchEvent(evt);
-      }
-      else {
-        document.fireEvent("scroll");
-      }
-    }, 500)
-  })
-
-</script>
-            </div>
           
         
       </div>
@@ -503,8 +312,8 @@
           <div class="section bg-color post post-page">
             <header class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/gou-zao-er-cha-shu/">
-      构造二叉树
+    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/guan-yu-mo-zhu-de-ji-dian/">
+      关于魔术的几点
     </a>
   </h1>
   <div class="post-meta">
@@ -512,159 +321,40 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span>发布于</span>
-      <span>2021-09-11</span>
+      <span>2021-10-08</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show">分类于</span>
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/vQz01gNDr/">
-        <span>Code</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/xkcUUvOZE/">
-        <span>Algorithm</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/ht4zJPtbO/">
-        <span>NPEE</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/1X3m3E6CSz/">
-        <span>DataStructure</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>4分钟</span>
+      <span>5分钟</span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>838<span class="pc-show">字数</span></span>
+      <span>1321<span class="pc-show">字数</span></span>
     </span>
     
   </div>
 </header>
             <div class="post-body next-md-body" id="post_body">
-              <p>这也是比较难的一个算法点，难点主要在于步骤有些繁复，且递归条件和区间开闭容易遗漏或者搞错。可以在力扣找到对应的题目。</p>
-<!-- more -->
-<h2 id="从中序和后序遍历序列构造二叉树">从中序和后序遍历序列构造二叉树</h2>
-<p>不管是【中序 + 前序】还是【中序 + 后序】，其实思路都是一样的，大概分为以下几个步骤：</p>
-<ol>
-<li>通过后序（或者前序）序列找到树的根节点</li>
-<li>通过中序序列确定根节点的左右子树</li>
-<li>回过头来分割后序序列</li>
-<li>递归处理左右区间</li>
+              <ol start="0">
+<li>近日做了一个关于魔术的梦，梦中尝试着找到巴格拉斯效果的解，于是上网找了几个魔术视频重温了一下。继而发现了视频下方有许多争论，故作此篇。以下开始。</li>
+<li>当魔术师再三激烈强调他没有 pre-show 或者 stooges 的时候（包括反复询问、对天发誓等），那就是没有。许多人会习惯性地把无法解释的手法归结为台上台下的串通，即使魔术师反复解释，这无异于怀疑一个职业棋手在比赛中使用人工智能，等同于游戏中的打不过就是挂。</li>
+<li>关于近景魔术：5年前的我完全钟爱于近景魔术（中的纯手法魔术），那种只凭手法而不依靠任何道具的快感...... 罗宾的教学入门，早期刘谦的魔术录像，以及后起之秀 Shin Lin 和 Eric Chien（他在 2019 年的世界魔术大赛表演着实令人震撼，和别的近景魔术师不同，他的手法十分柔顺，与整个人的气质融为一体，对我而言十分具有吸引力）的魔术录像...... 甚至可以扩展到千术，尤其是郑xx和马xx...... 但当你可以清楚知道（即使那个魔术师手速爆表，完全看不出破绽，但你知道他就是用了）他用了什么 force 技巧或者各种 palm 或假切，甚至落汗之后，一切就变得有些索然无味了起来。继而转到了更深层次的注意力转移、牌序应用...... 终究还是不够。</li>
+<li>关于大型魔术：这是我从来都没喜欢过的范畴，我不知道这个概念是否正确。但我印象中的大型魔术就是各种道具，大黑箱子，人体切割，瞬间移动...... 我并不否认有许多出色的大型魔术，但他们永远不在我的喜爱范围之内。</li>
+<li>关于心灵魔术：一开始看的当然是 Max Maven 和 Derren Brown 了，心灵魔术更加注重于对表演的设计，加上一些心理学技术，NLP 催眠疗法等...... 但仍然要注意的是，大多数魔术仍然可以用手法和精巧的道具设计来解释，这也是心灵魔术最常被误解的地方（我想）。最吸引我的地方在于 mental magic，其实我更想说 mentalism，在面对不同的群体的时候如何改进自己的表演技巧，如何让手法与自己的行为、言语、和观众的互动融为一体，换句话说，这个魔术是有破绽的，但是魔术师会通过设计让这个破绽完全不可能让你察觉到（纯手法魔术则是单纯依靠角度，所以这里想表达的其实是，前者是通过手法调整角度，而心灵魔术不止于此，她可以让观众主动避开那个角度 —— 视觉角度和思考角度），也正是如此才让魔术有了更多的可能性。</li>
+<li>再但是，依然不能忘记基础手法的重要性，以及基础手法创新的重要性。</li>
+<li>刘谦在哔哩哔哩上发布 M.E.E.T 的表演视频时在留言区的话语令我印象深刻：</li>
 </ol>
-<p>这里理所应当该采用递归的算法，所以还要考虑一下递归的三个步骤，并且在进行数组分割的时候要考虑清楚区间的的开闭，在以下的代码中我选择了左开右闭的实现方式。</p>
-<p>先给出伪代码：</p>
-<pre><code class="language-C++">// is = start index of inorder, ie = end index of inorder ...... 
-TreeNode* build(vector&lt;int&gt;&amp; inorder, int is, int ie, vector&lt;int&gt;&amp; postorder, int ps, int pe) {
-    // return addition - 1
-    if (pe == ps) return NULL;   // 因为是左闭右开，所以当 `pe == ps` 时数组中就已经没有任何节点了。
-
-    // return addition - 2
-    TreeNode* root = new TreeNode(postorder[pe - 1]);
-    if (ps == pe - 1) return root;
-
-    // find the dividing index
-    // todo
-
-    // divide inorder vector 
-    // todo
-    
-    // divide preorder vector 
-    // todo
-
-    // ls_i 表示 left-start-inorder 中序序列左子树的起始索引，其他的依此类推
-    root-&gt;left = build(inorder, ls_i, le_i, postorder, ls_p, le_p);
-    root-&gt;right = build(inorder, rs_i, re_i, postorder, rs_p, re_p);
-}
-</code></pre>
-<p>重点代码就在找到分割节点和分割两个数组这里了，代码如下：</p>
-<pre><code class="language-C++">    // find the dividing index 
-    int p;
-    for (int p = is, p &lt; ie; p++) 
-        if (inorder[p] == root-&gt;val)
-            break;
-
-    // divide inorder vector 
-    ls_i = is;
-    le_i = p;
-    rs_i = p + 1;
-    re_i = ie;
-
-    // divide postorder vector 
-    ls_p = ps;
-    le_p = ps + p - is;
-    rs_p = le_p;
-    re_p = pe - 1;
-</code></pre>
-<p>首先根据一个循环在中序序列中找到根节点的索引，然后索引左边就是左子树，右边就是右子树；接下来开始切割后序序列，记中序序列分割得到的左子树中有 n 个节点，那么后序序列中的前 n 个节点就是左子树，剩下的节点就在右子树中。</p>
-<p>这样整个递归函数就写完了，我们只需要在主函数中调用这个递归函数就可以了，代码如下：</p>
-<pre><code class="language-C++">TreeNode* buildTree(vector&lt;int&gt;&amp; inorder, vector&lt;int&gt;&amp; postorder) {
-    if (postorder.size() == 0 || inorder.size() == 0) return NULL;
-    return build(inorder, 0, inorder.size(), postorder, 0, postorder.size());
-}
-</code></pre>
-<h2 id="从中序和前序遍历序列构造二叉树">从中序和前序遍历序列构造二叉树</h2>
-<p>如上所述，整个过程与【中序 + 后序】并没有什么区别。代码如下：</p>
-<pre><code class="language-C++">TreeNode* build(vector&lt;int&gt;&amp; inorder, int is, int ie, vector&lt;int&gt;&amp; preorder, int ps, int pe) {
-    if (ps == pe) return NULL;
-
-    TreeNode* root = new TreeNode(preorder[ps]);
-    if (pe == ps + 1) return root;
-
-    int p;
-    for (p = is; p &lt; ie; p++) 
-        if (inorder[p] == root-&gt;val)
-            break;
-    
-    // divide inorder 
-    int ls_i = is;
-    int le_i = p;
-    int rs_i = p + 1;
-    int re_i = ie;
-
-    // divide preorder 
-    int ls_p = ps + 1;
-    int le_p = ps + 1 + p - is;
-    int rs_p = le_p;
-    int re_p = pe;
-
-    root-&gt;left = build(inorder, ls_i, le_i, preorder, ls_p, le_p);
-    root-&gt;right = build(inorder, rs_i, re_i, preorder, rs_p, re_p);
-
-    return root;
-}
-
-TreeNode* buildTree(vector&lt;int&gt;&amp; inorder, vector&lt;int&gt;&amp; preorder) {
-    if (inorder.size() == 0 || preorder.size() == 0) return NULL;
-    return build(inorder, 0, inorder.size(), preorder, 0, preorder.size());
-}
-</code></pre>
-<p>最后再注意一下以下几个点：</p>
-<ol>
-<li>区间的开闭</li>
-<li>不要忘了返回值</li>
-<li>注意递归的结束条件</li>
-<li>参数太多不要混淆</li>
-<li>没了</li>
+<blockquote>
+<p>...... 我想到这场表演有个小插曲其实可以说一下。演出前一天，我跟其他嘉宾喝着啤酒，在座有Cyril，Daniel Garcia，蔡威泽，韩国的 Chraming Chio, Lee Eun Gyeol，西班牙的 Dani Daotiz 等等...... 我说到明天我打算表演一个魔术，准备找一堆魔术师上台当观众，但困扰着我的是如何证明参与的观众不是托。因为如果这个魔术用到了托就没意义了。于是所有人一边喝着啤酒，一边讨论了快一个半小时。有人可以丢球随机选人，有人说可以六位台湾魔术师各带一位观众上台，有人说可以在观众席表演，想法很多，但都不是我要的。因为会打乱表演节奏。直到，酒量很差的 Lee Eun Gyeol 睡眼惺忪嘟囔了一句：“我觉得，也许，不用证明耶..... 是不是托不是一眼就能看出来吗？如果是真的，大家都能感觉到的吧。” 所有魔术师沉默了几秒。一致认同，点头同意。心中暗地承认，我们都入魔了。一眼就能看出的事实，何必证明。</p>
+</blockquote>
+<ol start="7">
+<li>我突然想到有一段时间我曾经兴致勃勃地想逐一破解周杰伦在综艺里的每个魔术，但半途而废了，因为有些实在是让人没有探索的欲望。在观众心中形成一个谜题，这是让其感到奇迹的前提条件。</li>
+<li>早年我看了一些 Penguin Live 的视频，非常具有启发性，但并没有完全看完，写文章时看到 2021 年还出了 Adam Wilber 等...... #Todo 这或许是未来某段时间的用餐计划。以及原来 Lu Qian 也去过企鹅讲座了，真的是跟不上时代。</li>
 </ol>
+<p>END.</p>
 
             </div>
             <div class="post-footer">
@@ -675,7 +365,7 @@ TreeNode* buildTree(vector&lt;int&gt;&amp; inorder, vector&lt;int&gt;&amp; preor
     </li>
     <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://icantnotfindaname.github.io/post/gou-zao-er-cha-shu/" title="构造二叉树">https://icantnotfindaname.github.io/post/gou-zao-er-cha-shu/</a>
+      <a href="https://icantnotfindaname.github.io/post/guan-yu-mo-zhu-de-ji-dian/" title="关于魔术的几点">https://icantnotfindaname.github.io/post/guan-yu-mo-zhu-de-ji-dian/</a>
     </li>
     <li class="post-copyright-license">
       <strong>版权声明： </strong>
@@ -684,27 +374,15 @@ TreeNode* buildTree(vector&lt;int&gt;&amp; inorder, vector&lt;int&gt;&amp; preor
   </ul>
   <div class="tags">
     
-      <a href="https://icantnotfindaname.github.io/tag/vQz01gNDr/"># Code</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/xkcUUvOZE/"># Algorithm</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/ht4zJPtbO/"># NPEE</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/1X3m3E6CSz/"># DataStructure</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="一元积分学的概念和计算" href="https://icantnotfindaname.github.io/post/yi-yuan-ji-fen-xue-de-gai-nian-he-ji-suan/">一元积分学的概念和计算</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="一元积分学的概念和计算" href="https://icantnotfindaname.github.io/post/yi-yuan-ji-fen-xue-de-gai-nian-he-ji-suan/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="递归与回溯：以二叉树为例" href="https://icantnotfindaname.github.io/post/di-gui-yu-hui-su-yi-er-cha-shu-wei-li/">递归与回溯：以二叉树为例</a>
-        <a class="nav-mobile-next" title="递归与回溯：以二叉树为例" href="https://icantnotfindaname.github.io/post/di-gui-yu-hui-su-yi-er-cha-shu-wei-li/">下一篇</a>
+        <a class="nav-pc-next" title="VPS 究极专业配置网盘篇（网盘+转存）" href="https://icantnotfindaname.github.io/post/gu-ge-zhuan-cun-jiu-ji-zhuan-ye-pei-zhi/">VPS 究极专业配置网盘篇（网盘+转存）</a>
+        <a class="nav-mobile-next" title="VPS 究极专业配置网盘篇（网盘+转存）" href="https://icantnotfindaname.github.io/post/gu-ge-zhuan-cun-jiu-ji-zhuan-ye-pei-zhi/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
