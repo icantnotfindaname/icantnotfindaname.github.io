@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://icantnotfindaname.github.io</id>
     <title>Louispace</title>
-    <updated>2021-10-30T11:29:33.015Z</updated>
+    <updated>2021-10-30T11:31:14.725Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://icantnotfindaname.github.io"/>
     <link rel="self" href="https://icantnotfindaname.github.io/atom.xml"/>
@@ -67,8 +67,15 @@ while(x&lt;n/2)
         <link href="https://icantnotfindaname.github.io/post/guan-yu-mo-zhu-de-ji-dian/">
         </link>
         <updated>2021-10-08T10:53:54.000Z</updated>
+        <summary type="html"><![CDATA[<ol start="0">
+<li>近日做了一个关于魔术的梦，梦中尝试着找到巴格拉斯效果的解，于是上网找了几个魔术视频重温了一下。继而发现了视频下方有许多争论，故作此篇。以下开始。</li>
+</ol>
+]]></summary>
         <content type="html"><![CDATA[<ol start="0">
 <li>近日做了一个关于魔术的梦，梦中尝试着找到巴格拉斯效果的解，于是上网找了几个魔术视频重温了一下。继而发现了视频下方有许多争论，故作此篇。以下开始。</li>
+</ol>
+<!-- more -->
+<ol>
 <li>当魔术师再三激烈强调他没有 pre-show 或者 stooges 的时候（包括反复询问、对天发誓等），那就是没有。许多人会习惯性地把无法解释的手法归结为台上台下的串通，即使魔术师反复解释，这无异于怀疑一个职业棋手在比赛中使用人工智能，等同于游戏中的打不过就是挂。—— 是对一个专业魔术师尊严的无情践踏。</li>
 <li>关于近景魔术：5年前的我完全钟爱于近景魔术（中的纯手法扑克牌魔术），那种只凭手法而不依靠任何道具的快感...... 罗宾的教学入门，早期刘谦的魔术录像，以及后起之秀 Shin Lin 和 Eric Chien（他在 2019 年的世界魔术大赛表演着实令人震撼，和别的近景魔术师不同，他的手法十分柔顺，与整个人的气质融为一体，对我而言十分具有吸引力）的魔术录像...... 甚至可以扩展到千术，尤其是郑xx和马xx...... 但当你可以清楚知道（即使那个魔术师手速爆表，完全看不出破绽，但你知道他就是用了）他用了什么 force 技巧或者各种 palm 或假切，甚至落汗之后，一切就变得有些索然无味了起来。继而转到了更深层次的注意力转移、牌序应用...... 终究还是不够。</li>
 <li>关于大型魔术：这是我从来都没喜欢过的范畴，不知道这个概念是否正确。但我印象中的大型魔术就是各种道具，大黑箱子，人体切割，瞬间移动...... 并不否认有许多出色的大型魔术，但他们永远不在我的喜爱范围之内。</li>
