@@ -8,7 +8,7 @@
 <meta name="keywords" content="Louispace">
 <meta name="description" content="想做你的对手">
 <meta name="theme-color" content="#000">
-<title>KMP 算法 | Louispace</title>
+<title>关于算法复杂度的几道题 | Louispace</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1635593345111">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/gemini.css">
@@ -29,8 +29,8 @@
 
 
 
-  <meta name="description" content="KMP 算法" />
-  <meta name="keywords" content="Algorithm,NPEE,DataStructure" />
+  <meta name="description" content="关于算法复杂度的几道题" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -174,8 +174,7 @@
       <div class="sidebar-body gemini" id="sidebar_body">
         
           
-            <div class="post-side-meta" id="post_side_meta">
-              
+            
 <div class="sidebar-wrapper box-shadow-wrapper bg-color">
   <div class="sidebar-item">
     <img class="site-author-image right-motion" src="/images/avatar.png"/>
@@ -226,201 +225,6 @@
 
 
 </div>
-            </div>
-            <div class="post-toc sidebar-body-active" id="post_toc" style="opacity: 1;">
-              <div class="toc-box right-motion">
-  <div class="toc-wrapper auto-number auto"
-    id="toc_wrapper">
-    <ul class="markdownIt-TOC">
-<li>
-<ul>
-<li>
-<ul>
-<li><a href="#next-%E6%95%B0%E7%BB%84%E7%9A%84%E4%BD%9C%E7%94%A8">next 数组的作用</a></li>
-<li><a href="#next-%E6%95%B0%E7%BB%84%E7%9A%84%E6%B1%82%E6%B3%95">next 数组的求法</a></li>
-<li><a href="#kmp-%E7%AE%97%E6%B3%95%E5%86%99%E6%B3%95">KMP 算法写法</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  </div>
-</div>
-
-<script>
-
-  let lastTop = 0, lList = [], hList = [], postBody, lastIndex = -1;
-  let active = 'active-show', activeClass = 'active-current';
-  let tocWrapper = document.querySelector('#toc_wrapper');
-  let tocContent = tocWrapper.children[0];
-  let autoNumber = tocWrapper && tocWrapper.classList.contains('auto-number');
-
-  function addTocNumber(elem, deep) {
-    if (!elem) {
-      return;
-    }
-    let prop = elem.__proto__;
-
-    if (prop === HTMLUListElement.prototype) {
-      for (let i = 0; i < elem.children.length; i++) {
-        addTocNumber(elem.children[i], deep + (i + 1) + '.');
-      }
-    } else if (prop === HTMLLIElement.prototype) {
-      // 保存li元素
-      if (elem.children[0].__proto__ === HTMLAnchorElement.prototype) {
-        lList.push(elem);
-      }
-      for (let i = 0; i < elem.children.length; i++) {
-        let cur = elem.children[i];
-        if (cur.__proto__ === HTMLAnchorElement.prototype) {
-          if (autoNumber) {
-            cur.text = deep + ' ' + cur.text;
-          }
-        } else if (cur.__proto__ === HTMLUListElement.prototype) {
-          addTocNumber(cur, deep);
-        }
-      }
-    }
-  }
-
-  function removeParentActiveClass() {
-    let parents = tocContent.querySelectorAll('.' + active)
-    parents.forEach(function (elem) {
-      elem.classList.remove(active);
-    });
-  }
-
-  function addActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.add(activeClass);
-    }
-  }
-
-  function removeActiveClass(index) {
-    if (index >= 0 && index < hList.length) {
-      lList[index].classList.remove(activeClass);
-    }
-  }
-
-  function addActiveLiElemment(elem, parent) {
-    if (!elem || elem === parent) {
-      return;
-    } else {
-      if (elem.__proto__ === HTMLLIElement.prototype) {
-        elem.classList.add(active);
-      }
-      addActiveLiElemment(elem.parentElement, parent);
-    }
-  }
-
-  function showToc() {
-    if (tocWrapper) {
-      postBody = document.querySelector('#post_body');
-      for (let i = 0; i < postBody.children.length; i++) {
-        if (postBody.children[i].__proto__ === HTMLHeadingElement.prototype) {
-          hList.push(postBody.children[i]);
-        }
-      }
-      if (tocWrapper.classList.contains('compress')) {
-        tocContent.classList.add('closed');
-      } else if (tocWrapper.classList.contains('no_compress')) {
-        tocContent.classList.add('expanded');
-      } else {
-        if (hList.length > 10) {
-          active = 'active-hidden'
-          tocContent.classList.add('closed');
-        } else {
-          tocContent.classList.add('expanded');
-        }
-      }
-    }
-  }
-
-  (function () {
-    // 处理不是从#一级标题开始目录
-    if (tocContent.children.length === 1 && tocContent.children[0].__proto__ === HTMLLIElement.prototype) {
-      let con = tocContent.children[0].children[0];
-      tocContent.innerHTML = con.innerHTML;
-    }
-    let markdownItTOC = document.querySelector('.markdownIt-TOC');
-    let innerHeight = window.innerHeight;
-    markdownItTOC.style = `max-height: ${innerHeight - 80 > 0 ? innerHeight - 80 : innerHeight}px`
-    addTocNumber(tocContent, '');
-  })();
-
-  document.addEventListener('scroll', function (e) {
-    if (lList.length <= 0) {
-      return;
-    }
-    let scrollTop = document.scrollingElement.scrollTop + 10;
-    let dir;
-
-    if (lastTop - scrollTop > 0) {
-      dir = 'up';
-    } else {
-      dir = 'down';
-    }
-
-    lastTop = scrollTop;
-    if (scrollTop <= 0) {
-      if (lastIndex >= 0 && lastIndex < hList.length) {
-        lList[lastIndex].classList.remove(activeClass);
-      }
-      return;
-    }
-
-    let current = 0, hasFind = false;
-    for (let i = 0; i < hList.length; i++) {
-      if (hList[i].offsetTop > scrollTop) {
-        current = i;
-        hasFind = true;
-        break;
-      }
-    }
-    if (!hasFind && scrollTop > lList[lList.length - 1].offsetTop) {
-      current = hList.length - 1;
-    } else {
-      current--;
-    }
-    if (dir === 'down') {
-      if (current > lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex)
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    } else {
-      if (current < lastIndex) {
-        addActiveClass(current);
-        removeActiveClass(lastIndex);
-        lastIndex = current;
-        removeParentActiveClass();
-        lList[current] && addActiveLiElemment(lList[current].parentElement, tocContent);
-      }
-    }
-  });
-
-
-  window.addEventListener('load', function () {
-    showToc();
-    document.querySelector('#sidebar').style = 'display: block;';
-    tocWrapper.classList.add('toc-active');
-    setTimeout(function () {
-      if ("createEvent" in document) {
-        let evt = document.createEvent("HTMLEvents");
-        evt.initEvent("scroll", false, true);
-        document.dispatchEvent(evt);
-      }
-      else {
-        document.fireEvent("scroll");
-      }
-    }, 500)
-  })
-
-</script>
-            </div>
           
         
       </div>
@@ -508,8 +312,8 @@
           <div class="section bg-color post post-page">
             <header class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/kmp-suan-fa/">
-      KMP 算法
+    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/guan-yu-suan-fa-fu-za-du-de-ji-dao-ti/">
+      关于算法复杂度的几道题
     </a>
   </h1>
   <div class="post-meta">
@@ -517,95 +321,64 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span>发布于</span>
-      <span>2021-09-03</span>
+      <span>2021-10-30</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
     
     <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show">分类于</span>
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/xkcUUvOZE/">
-        <span>Algorithm</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/ht4zJPtbO/">
-        <span>NPEE</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/1X3m3E6CSz/">
-        <span>DataStructure</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
-    
-    <span class="meta-item">
       <i class="fa fa-clock-o"></i>
-      <span>4分钟</span>
+      <span>2分钟</span>
     </span>
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>854<span class="pc-show">字数</span></span>
+      <span>349<span class="pc-show">字数</span></span>
     </span>
     
   </div>
 </header>
             <div class="post-body next-md-body" id="post_body">
-              <p>这个算法堪称整个数据结构考研中最难的一个算法，第一次看的时候也是一脸懵逼。为了表达对它的敬意，写一篇文章集中解决ta。</p>
+              <p>数据结构重要考点 - 1</p>
 <!-- more -->
-<h3 id="next-数组的作用">next 数组的作用</h3>
-<p>这个其实很好理解，next 数组就是为了避免像暴力匹配算法一样，一发现文本串与模式串不匹配就必须重置指针重新从头开始匹配。使用了 next 数组之后，文本串的指针可以不用回溯，所以搜索效率才可以达到 O(m) 其中 m 是文本串的长度。下面给出一个例子：</p>
-<pre><code>文本串：aabaabaaf
-模式串：aabaaf
-</code></pre>
-<p>首先两个字符串的指针都从头开始匹配，直到第六个字母的时候发现不匹配。这要是暴力匹配算法就会直接把文本串的指针退回指向第二个字符，模式串指针退回指向开始字符，然后重新开始尝试匹配。但是 KMP 算法就不一样了，本质其实是利用了已匹配字符串的信息，因为很明显模式串往右移一位显然还是不能匹配啊，所以就直接把模式串右移到以下位置：</p>
-<pre><code>文本串：aabaabaaf
-模式串：xxxaabaaf
-</code></pre>
-<p>从计算机的角度来说，实现这个效果的方法就是文本串指针保持不动，模式串指针退回指向第三个字符（b）然后继续往后匹配。</p>
-<h3 id="next-数组的求法">next 数组的求法</h3>
-<p>数组的值只与模式串有关而与文本串无关，next[i] 的含义为：i 包括 i 之前的子数组的<strong>最大相等前后缀的长度</strong>。这里还需要注意一下：前缀的含义是一个字符串除去最后一个字母之外的所有从第一个字母开始的连续字串，后缀也是差不多的道理。所以比如“aabaa”这个字串的最大相等前后缀就是“aa”，所以其最大相等前后缀长度就是 2；“aaaaa”这个字串的最大相等前后缀是“aaaa”，所以最大相等前后缀长度就是 4。以下是具体代码（C++）:</p>
-<pre><code class="language-C++">void getNext(int *next, string s) {
-    int j = 0;
-    next[0] = 0;
-    for (int i = 1; i &lt; s.size(); i++) {
-        while (j &gt; 0 &amp;&amp; s[i] != s[j]) 
-            j = next[j-1];  // 重点语句
-        if (s[i] == s[j])
-            ++j;
-        next[i] = j;
+<ol>
+<li>求以下算法的时间复杂度：</li>
+</ol>
+<pre><code class="language-C++">for(i=1;i&lt;=n;i++)  {
+    for(j=1;j&lt;=i;j++)  {
+        for(k=1;k&lt;=j;k++)
+            x=x+2;
     }
-} 
-</code></pre>
-<p>前面首先对指针和数组进行初始化，重点语句是下面这句，如果新指向字符不匹配，就要重新回到上一个子串（不包含新字符）的最大相等字符长度，然后重新匹配。（这里说的不太清楚，请自行领悟，最好自己在纸上写一下）</p>
-<h3 id="kmp-算法写法">KMP 算法写法</h3>
-<p>求出 next 数组之后就好办了，每次匹配到不符合的时候，就找已经匹配完的子串的最大相等前后缀，也就是直接查 next 数组，然后把模式串的指针退回去继续匹配就行了。代码如下：</p>
-<pre><code class="language-C++">int strStr(string s, string t) {
-    if (t.size() == 0)
-        return 0;
-    int next[t.size()];
-    getNext(next, t);
-    int j = 0;
-    for (int i = 0; i &lt; s.size(); i++) {
-        while (j &gt; 0 &amp;&amp; s[i] != t[j]) 
-            j = next[j - 1];
-        if (s[i] == t[j])
-            ++j;
-        if (j == t.size())  // 注意这里的判断条件，不是 j == t.size() - 1
-            return (i - t.size() + 1);
-    }
-    return -1;
 }
 </code></pre>
-<p>结束。</p>
+<p>最后算出来的循环次数应该是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mrow><mi>n</mi><mo>(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo>)</mo><mo>(</mo><mn>2</mn><mi>n</mi><mo>+</mo><mn>1</mn><mo>)</mo></mrow><mn>6</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{n(n+1)(2n+1)}{6}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.355em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.01em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.485em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span><span class="mopen mtight">(</span><span class="mord mathdefault mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mord mathdefault mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span><br>
+一般这种累加的题，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span></span></span></span> 层循环的算法复杂度就是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mi>k</mi></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^k)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.099108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.849108em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></p>
+<ol start="2">
+<li>某算法的时间复杂度为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><msup><mi>n</mi><mn>2</mn></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">O(n^2)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>，表明该算法的（）<br>
+A. 问题规模是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">n^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><br>
+B. 执行时间等于 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">n^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><br>
+C. 执行时间与 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">n^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> 成正比<br>
+D. 问题规模与 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>n</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">n^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> 成正比</li>
+</ol>
+<p>问题规模依然是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">n</span></span></span></span>，时间复杂度表示的是其代码的执行时间与其成正比。</p>
+<ol start="3">
+<li>下面程序片段的时间复杂度是（）</li>
+</ol>
+<pre><code class="language-C++">x=2;
+while(x&lt;n/2)
+  x=2*x;
+</code></pre>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo>(</mo><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>2</mn></msub><mi>n</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">O(log_2 n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span> 的常见形态。</p>
+<ol start="4">
+<li>
+<p>递归代码的时间复杂度求解一般都是深度与单层复杂度的乘积。</p>
+</li>
+<li>
+<p>算法原地工作的含义是<strong>算法需要的辅助空间是常量</strong>。</p>
+</li>
+<li>
+<p>空间复杂度主要是各种数组所占的空间，递归栈所占的空间（一般就是递归栈的深度）之类的。注意数组在函数中作为参数出现的时候，占的空间只是指针，而不是整个数组。</p>
+</li>
+</ol>
 
             </div>
             <div class="post-footer">
@@ -616,7 +389,7 @@
     </li>
     <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://icantnotfindaname.github.io/post/kmp-suan-fa/" title="KMP 算法">https://icantnotfindaname.github.io/post/kmp-suan-fa/</a>
+      <a href="https://icantnotfindaname.github.io/post/guan-yu-suan-fa-fu-za-du-de-ji-dao-ti/" title="关于算法复杂度的几道题">https://icantnotfindaname.github.io/post/guan-yu-suan-fa-fu-za-du-de-ji-dao-ti/</a>
     </li>
     <li class="post-copyright-license">
       <strong>版权声明： </strong>
@@ -625,25 +398,15 @@
   </ul>
   <div class="tags">
     
-      <a href="https://icantnotfindaname.github.io/tag/xkcUUvOZE/"># Algorithm</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/ht4zJPtbO/"># NPEE</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/1X3m3E6CSz/"># DataStructure</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="补码浅析" href="https://icantnotfindaname.github.io/post/bu-ma-qian-xi/">补码浅析</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="补码浅析" href="https://icantnotfindaname.github.io/post/bu-ma-qian-xi/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="二叉树遍历的非递归做法" href="https://icantnotfindaname.github.io/post/er-cha-shu-bian-li-de-fei-di-gui-zuo-fa/">二叉树遍历的非递归做法</a>
-        <a class="nav-mobile-next" title="二叉树遍历的非递归做法" href="https://icantnotfindaname.github.io/post/er-cha-shu-bian-li-de-fei-di-gui-zuo-fa/">下一篇</a>
+        <a class="nav-pc-next" title="关于魔术的几点" href="https://icantnotfindaname.github.io/post/guan-yu-mo-zhu-de-ji-dian/">关于魔术的几点</a>
+        <a class="nav-mobile-next" title="关于魔术的几点" href="https://icantnotfindaname.github.io/post/guan-yu-mo-zhu-de-ji-dian/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
