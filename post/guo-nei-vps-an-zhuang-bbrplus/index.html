@@ -8,7 +8,7 @@
 <meta name="keywords" content="Louispace">
 <meta name="description" content="想做你的对手">
 <meta name="theme-color" content="#000">
-<title>齐泽克：分析哲学 vs 欧陆哲学 | Louispace</title>
+<title>国内VPS安装BBRplus | Louispace</title>
 <link rel="shortcut icon" href="/favicon.ico?v=1644653911169">
 <link rel="stylesheet" href="/styles/main.css">
 <link rel="stylesheet" href="/media/css/gemini.css">
@@ -29,8 +29,8 @@
 
 
 
-  <meta name="description" content="齐泽克：分析哲学 vs 欧陆哲学" />
-  <meta name="keywords" content="Philosophy,Video,Zizek" />
+  <meta name="description" content="国内VPS安装BBRplus" />
+  <meta name="keywords" content="" />
 </head>
 
 <body>
@@ -312,8 +312,8 @@
           <div class="section bg-color post post-page">
             <header class="post-header">
   <h1 class="post-title">
-    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/qi-ze-ke-fen-xi-zhe-xue-vs-ou-lu-zhe-xue/">
-      齐泽克：分析哲学 vs 欧陆哲学
+    <a class="post-title-link" href="https://icantnotfindaname.github.io/post/guo-nei-vps-an-zhuang-bbrplus/">
+      国内VPS安装BBRplus
     </a>
   </h1>
   <div class="post-meta">
@@ -321,34 +321,9 @@
     <span class="meta-item pc-show">
       <i class="fa fa-calendar-o"></i>
       <span>发布于</span>
-      <span>2021-08-20</span>
+      <span>2022-02-12</span>
       <span class="post-meta-divider pc-show">|</span>
     </span>
-    
-    <span class="meta-item">
-      <i class="fa fa-folder-o"></i>
-      <span class="pc-show">分类于</span>
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/3iIo2bzrB/">
-        <span>Philosophy</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/wxJsyHMZUs/">
-        <span>Video</span>
-      </a>、
-      
-      
-      
-      <a href="https://icantnotfindaname.github.io/tag/GUvytsV4Fx/">
-        <span>Zizek</span>
-      </a>
-      
-      
-    </span>
-    <span class="post-meta-divider">|</span>
     
     <span class="meta-item">
       <i class="fa fa-clock-o"></i>
@@ -357,16 +332,21 @@
     <span class="meta-item">
       <span class="post-meta-divider">|</span>
       <i class="fa fa-file-word-o"></i>
-      <span>49<span class="pc-show">字数</span></span>
+      <span>57<span class="pc-show">字数</span></span>
     </span>
     
   </div>
 </header>
             <div class="post-body next-md-body" id="post_body">
-              <p>对我而言，更为感兴趣的一点是齐泽克在视频后半部分提出的有趣观点：<strong>现实是未完成的</strong>。</p>
-<!-- more -->
-<p>视频地址：https://www.bilibili.com/video/BV17341167ur?share_source=copy_web</p>
-<iframe src="//player.bilibili.com/player.html?aid=419940997&bvid=BV17341167ur&cid=392866033&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+              <p><a href="https://raw.githubusercontent.com/cx9208/Linux-NetSpeed/master/bbrplus/centos/7/kernel-4.14.129-bbrplus.rpm">内核下载地址</a></p>
+<p>安装代码如下：</p>
+<pre><code>yum install -y kernel-4.14.129-bbrplus.rpm
+grub2-set-default 'CentOS Linux (4.14.129-bbrplus) 7 (Core)'
+echo &quot;net.core.default_qdisc=fq&quot; &gt;&gt; /etc/sysctl.conf
+echo &quot;net.ipv4.tcp_congestion_control=bbrplus&quot; &gt;&gt; /etc/sysctl.conf
+reboot
+</code></pre>
+
             </div>
             <div class="post-footer">
   <ul class="post-copyright">
@@ -376,7 +356,7 @@
     </li>
     <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://icantnotfindaname.github.io/post/qi-ze-ke-fen-xi-zhe-xue-vs-ou-lu-zhe-xue/" title="齐泽克：分析哲学 vs 欧陆哲学">https://icantnotfindaname.github.io/post/qi-ze-ke-fen-xi-zhe-xue-vs-ou-lu-zhe-xue/</a>
+      <a href="https://icantnotfindaname.github.io/post/guo-nei-vps-an-zhuang-bbrplus/" title="国内VPS安装BBRplus">https://icantnotfindaname.github.io/post/guo-nei-vps-an-zhuang-bbrplus/</a>
     </li>
     <li class="post-copyright-license">
       <strong>版权声明： </strong>
@@ -385,25 +365,15 @@
   </ul>
   <div class="tags">
     
-      <a href="https://icantnotfindaname.github.io/tag/3iIo2bzrB/"># Philosophy</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/wxJsyHMZUs/"># Video</a>
-    
-      <a href="https://icantnotfindaname.github.io/tag/GUvytsV4Fx/"># Zizek</a>
-    
   </div>
   <div class="nav">
     <div class="nav-prev">
       
-        <i class="fa fa-chevron-left"></i>
-        <a class="nav-pc-next" title="齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因" href="https://icantnotfindaname.github.io/post/qi-ze-ke-xi-fang-zi-you-zhu-yi-mei-ti-bi-er-bu-tan-de-ta-li-ban-xun-su-duo-hui-a-fu-han-de-zhen-zheng-yuan-yin/">齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因</a class="nav-pc-next">
-        <a class="nav-mobile-prev" title="齐泽克: 西方自由主义媒体避而不谈的，塔利班迅速夺回阿富汗的真正原因" href="https://icantnotfindaname.github.io/post/qi-ze-ke-xi-fang-zi-you-zhu-yi-mei-ti-bi-er-bu-tan-de-ta-li-ban-xun-su-duo-hui-a-fu-han-de-zhen-zheng-yuan-yin/">上一篇</a>
-      
     </div>
     <div class="nav-next">
       
-        <a class="nav-pc-next" title="如何看懂生肉？" href="https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/">如何看懂生肉？</a>
-        <a class="nav-mobile-next" title="如何看懂生肉？" href="https://icantnotfindaname.github.io/post/ru-he-kan-dong-sheng-rou/">下一篇</a>
+        <a class="nav-pc-next" title="二叉树线索化" href="https://icantnotfindaname.github.io/post/er-cha-shu-xian-suo-hua/">二叉树线索化</a>
+        <a class="nav-mobile-next" title="二叉树线索化" href="https://icantnotfindaname.github.io/post/er-cha-shu-xian-suo-hua/">下一篇</a>
         <i class="fa fa-chevron-right"></i>
       
     </div>
